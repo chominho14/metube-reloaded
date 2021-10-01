@@ -1,0 +1,115 @@
+node.js
+브라우저 밖에서 돌아가는 자바스크립트.
+
+원래는 브라우저에서만 자바스크립트를 쓸 수 있었다.
+
+npm 자바스크립트 프로그램 메니저.
+--> 유용한 패키지들을 다운받아서 사용할 수 있게 만들어 준다.
+
+express를 사용할 것이다.
+
+json파일을 만들어 준다.(= node.js 시작한다.)
+json : 프로그래머가 파일에 정보를 저장하기 위해 만든 방식 중 하나.
+
+파일에 정보를 입력하는 방식.
+
+node.js 에서는 package.json이어야 한다.
+프로젝트를 만들 시 가장 먼저 만들어야 한다.
+
+github에서 레퍼지토리를 만들어 준 뒤
+프로젝트를 만들던 폴더에 git init으로 git파일을 만들어 준다.
+
+git remote 로 레퍼지터리와 연결해주고, npm init으로 
+package.json을 설정해 준다.
+
+
+package.json파일 안에 scripts안에 작성해 두면
+npm이 알아서 실행해 준다.
+( npm run 설정단어 )
+
+
+npm i express 로 express 패키지를 다운해 준다.
+npm은 dependencies를 찾아서 그 안에 있는 모듈들을 알아서 설치한다.
+npm i 만 입력해도.
+
+==> 파일을 친구한테 보낼 때 node_module을 보낼 필요 없다.
+정보는 dependencies에 저장해 있으니.
+
+다른 사람은 package.json파일만 받아서 npm i 만 하면 
+똑같은 환경이 만들어 진다.
+
+------------------------------------------
+
+babel설치,적용
+
+babel은 우리가 작성한 최신 자바스크립트를 컴파이 해준다.
+nodeJS --> 옛날 자바스크립트 변환을 도와준다.
+
+
+npm install --save-dev @babel/core
+로 설치 가능하다.
+
+--save-dev 는 devDependencies에 만ㄷ르어 주는 역할을 한다.
+
+babel.config.json파일은 만들고
+
+{
+  "presets": ["@babel/preset-env"]
+}
+
+를 붙여 넣어 준다.
+
+npm install @babel/preset-env --save-dev
+실행
+
+babel.config.json파일을 만들면 babel이 알아서 이 파일을
+찾고 내용들을 들여다 본다.
+preset은 babel을 위한 거대한 플로그인.
+
+package.json에서 babel로 컴파일하는 scripts를 만든다.
+
+npm i @babel/core @babel/node -save-dev를 실행
+
+scripts에 "dev": "babel-node index.js"추가해주기.
+
+import express from "express";를 index.js에 추가
+
+
+수정하는 걸 매번 run하기 불편하니깐 nodemon을 사용한다.
+
+nodemon : 파일이 수정되는 걸 감시해 주는 패키지.
+
+npm i nodemon --save-dev로 설치.
+
+"dev": "nodemon --exec babel-node index.js로 
+스크립트 안에 수정.
+
+npm run dev로 실행
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
