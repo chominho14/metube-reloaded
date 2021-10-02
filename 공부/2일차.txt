@@ -112,6 +112,46 @@ express는 node_module에 들어가 있다.
 디팬던시스와 차이. 
 겉으로의 차이는 서로 분리 돼 있다.
 
+depen프로젝트가 작동하기 위해 필요한 것들,
+devdepen개발자가 개발할 때 필요한 것들
+
+
+babel.config.json을 이용해서 바벨을 사용
+
+
+.gitignore은 github에 올리지 못하도록 설정해둔 것.
+
+
+------------------------------------------
+
+서버와 rountes 복습
+
+서버는 항상켜져있고 
+인터넷에 연결 돼 있"으면서 request를 listening하고 잇는 컴퓨터다.
+
+리퀘스트 = 서버에 요청하는 것
+브라우저를 통해서 웹사이트에 하는 모든 상호작용을 request라고 한다.
+
+request를 보내려면 url이 있어야 한다.
+
+end()는 종료시켜준다.
+arrow function은  return을 가지고 있다.
+send()는 텍스트를 배준다.
+
+app.get("/", function)
+	route, handler
+
+handler에 함수를 아 ㄴ넣어주면 에러가 발생한다.
+
+inline function
+() => {};
+
+
+middleware
+request와 response 중간에!!
+
+const logger =(req, res, next) ={}
+
 
 
 
