@@ -1,0 +1,108 @@
+export 와 import
+
+우리는 변수를 가져올 때 다른 파일에서 가져온다.
+export, import 설정을 해준 뒤.
+
+
+임포트하기 전에 익스포트 해야 한다.
+
+모든 js파일은 독립되어 있다.
+
+import할 때에 앞에 이름이 바뀌어도 상관 없다.
+export default를 하기 때문.
+
+default export 한 것은 아무 이름이나 붙일 수 있다.
+but, 그냥 export 한 것은 {}안에 이름을 정확히 입력해야 한다.
+
+import에서
+패키지는 자동으로 모듈에서 검색한다.
+경로가 적혀있으면 node.js는 경로로 이동해 변수를 찾는다.
+
+../는 지금 폴더에서 한 단계 나간다.
+./는 지금 폴더를 말한다.
+
+
+---------------------------------------
+
+지금까지의 구조
+
+
+
+server.js - globalRouter - userController
+			|- videoController
+	  - userRouter	 - userController
+	  - videoRouter	 - videoController
+
+-----------------------------------------
+
+
+url의 플랜 짜기.
+
+readme에 
+
+# metube
+
+/  -> Home
+/join -> Join
+/login -> Login
+/search -> Search
+
+
+
+/users/:id -> See User
+/users/logout -> Log Out
+/users/edit -> Edit MY Profile
+/users/delete -> Delete MY Profile
+
+/videos/:id -> See Video
+/videos/:id/edit -> Edit Video 
+/videos/:id/delete -> Delete Video
+/videos/upload -> Upload Video
+
+
+--------------------------------------
+
+globalRouter에서
+연결 되는 곳으로 get만들어 주기.
+
+globalRouter.get("/", trending);
+globalRouter.get("/join", join);
+globalRouter.get("/login", login);
+globalRouter.get("/search", search);
+
+
+해당하는 위치로 가서 
+
+export const search = (req, res) => res.sent("Search");
+만들어 주기.(나중에 메시지로 보내는 것을 html과의 랜더링으로 바꿔줄 것이다.)
+
+globalRouter에서 import -> {}에 해당하는 함수이름 추가하기.
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
