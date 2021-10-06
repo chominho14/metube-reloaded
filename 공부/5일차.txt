@@ -1,0 +1,163 @@
+
+정규식.
+https://expressjs.com/en/guide/routing.html
+
+app.get('/ab*cd', function (req, res) {
+  res.send('ab*cd')
+})
+등등 많은 방법
+
+정규식 : 문자열로부터 특정 정보를 추출해내는 방법.
+
+이용하는 방법 : 
+https://www.regexpal.com/
+/(nico\w+)/g
+~~\w+ :~~로 시작하는 모든 단어를 찾아준다.
+
+숫자로 시작하는 정규식.
+/(\d+)/g
+
+====> 실제로 사용!
+
+videoRouter.get("/:id(\\d+)", see);
+으로 사용한다.
+
+
+---------------------------------------------
+
+
+
+이제 컨트롤러에서 메시지를 보내지 말고 HTML을 보내주는 작업을 한다.
+
+
+방법 1.
+res.send(""); 안에 HTML 문자열을 써서 보내는 방법.
+(HTML파일이 커서 사용하지 않음.)
+
+방법 2.
+
+pug를 사용하면 된다.
+https://github.com/pugjs/pug
+
+pug 는 템플릿 엔진이다.
+
+사용 방법:
+1. npm install pug를 이용해 다운로드해준다.
+
+2. Express에게 html헬퍼로 pug를 쓰겠다고 말한다.
+--> server.js에서 app.set("view engine", "pug");를 추가해 준다.
+== pug를 뷰 엔진으로 설정하는 과정
+
+3. 실제로 pug파일을 생성한다.
+
+
+pug는 기본적으로 /views 파일을 찾도록 세팅되어있다.
+(현재 작업 디렉토리에서 /views라는 디렉토리를 찾는다.)
+process.cwd() + '/views' 로
+
+그것을 고쳐줘야 한다.
+
+src폴더 아래에 views폴더를 만들고 
+home.pug파일을 만ㄷ르어 준다.
+
+
+pug 작성법!!!익히기
+
+home.pug파일을 작성 후
+
+이 페이지를 보내고 싶은 곳에 와서 랜더링해준다.
+export const trending = (req, res) => res.render("home");
+식으로
+
+pug의 편한 점은 따로 import하지 않아도 된다는 점이다.
+app.set("view engine", "pug")를 추가해 뒀기 때문에
+express가 views디렉토리에서 pug파일을 찾는다.
+
+에러가 뜰 것이다.
+wetube/views 식으로 찾는다. 
+
+현재 작업중인 디렉토리를 보는 방법
+console.log(process.cwd());로 본다.
+
+package.json에서 설정되어 있다.
+현재 node.js시작하는 단계는 여기서 정해진다.
+
+
+고치는 방법은!!!
+디폴드 값을 바꿔준다.
+
+방법 1.
+views폴더를 src밖으로 꺼내는 방법.
+
+방법 2.
+view 세팅을 바꿔준다.
+app.set("views", process.cwd() + "/src/views");
+를 server.js에 추가해 준다.
+
+
+pug의 최고 장점은 반복할 필요가 없다는 것이다.
+
+팁) 파일명은 전부 소문자로 만든다.
+	띄어쓰기를 사용하지 않는다.
+
+자바스크립 코드는 유저가 보기 전에 평범한 텍스트로 변환된다.
+그 후 pug가 해석을 하고 다시 유저한테 보내준다.
+=> 랜더링
+
+
+
+하지만 아직도 반복하고 있다.
+
+이것을 해결하기 위해
+partial을 사용한다.
+===> pug의 강점!!
+
+
+views안에 partial폴더를 만들어 준다.
+거기 안에 footer.pug를 따로 만들어 준다.
+
+include를 통해 다른 pug파일을 추가할 수 있다.
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------
+
+express 라우팅.
+
+
+우리는 데이터베이스때문에 id를 기본 숫자로 넣지 않을 것이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
