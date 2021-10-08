@@ -1,0 +1,168 @@
+
+
+inheritance(상속)
+
+베이스를 만들어 준다.(레이아웃 , HTML)
+거기서부터 확장해 나간다.
+
+
+extends base.pug 으로 사용한다.
+
+
+Extends는 base파일을 그대로 가져와 붙인다.
+
+----------------------------------------
+
+block
+
+: 템플릿의 창문( 이것저것 가져다 넣는 것 )
+== 무언가를 넣을 수 있는 것.
+
+넣는 방법.
+
+h1 Base! 바꿀 부분을
+
+ block content로 바꿔준다.
+
+그리고는 바꾸길 원하는 pub파일로 가서
+
+block content 
+    h1 home
+
+식으로 바꿔 준다.
+
+하지만 이것 또한 block으로 매번 반복해야 한다.
+
+
+
+----------------------------------------
+
+자바스크립트를 이용한다.
+
+base.pug에서 
+
+title #{pageTitle} | Metube
+를 타이틀에 넣는다.
+
+
+render은 2가지 인수를 받는다.
+1. 뷰 이름
+2. 템플릿에 보낼 변수.
+
+따라서 controller에 와서
+
+export const trending = (req, res) => 
+	res.render("home", {pageTitle : "Home"});
+로 바꿔 준다.
+추가해 주고 싶은 변수를 추가해 사용한다.
+
+
+------------------------------------------
+
+
+만약 변수를 문자열 말고 배열을 보내게 되면 어떻게 변할까?
+
+
+------------------------------------------
+
+conditionals = if, if else
+
+h1=pageTitle 이런식으로 사용하면
+text로 인식하지 않고 variable로 인식한다.
+
+===>
+variable이랑 text랑 같이 사용하는 경우에는
+#{pageTitle} 로 사용해야 한다.
+
+text랑 같이 사용 안 하는 곳에는 
+=pageTitle 로 넣을 수 있다.
+
+
+어떠한 폼을 만들때 bool 타입을 같이 넣어
+base.pug 파일에서 if ~를 사용한다.
+
+예)
+
+container.js
+
+const fakeUser ={
+    username :"mino",
+    loggedIn: false,
+}
+
+base.pug
+
+if fakeUser.loggedIn
+       li 
+             a(href="/logout") Logout
+else 
+       li 
+             a(href="/login") Login
+
+식으로!
+
+
+--------------------------------------
+
+iteration
+
+: elements의 list를 보여준다.
+
+우리는 container.js에 동영상을 가져오는 배열을 생각해보자.
+이름이 videos인 배열을 만들고 리턴값 안에 추가해 준다.(pug에서 사용하려고.)
+
+그 후 pug파일로 와서 
+each를 적고 보여주고 싶은 variable 이름을 적어주면 된다.
+
+each video in videos
+            li=video  
+else 
+	li not found
+
+이렇게 사용한다...
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------
+
+
+진행 순서
+
+1. 템플릿을 모두 만든다.
+2. 데이터베이스를 연습한다.
+3. 유저 로그인 로그아웃 비밀번호 보호,바꾸기
+4. CSS, SCSS
+
+멋있게 하기 위해
+header에 파일을 추가시킨다.
+<link rel="stylesheet" href="https://unpkg.com/mvp.css">
+
+기본적으로 html을 이쁘게 만들어 진행한다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
