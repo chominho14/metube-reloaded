@@ -121,8 +121,57 @@ else
 
 이렇게 사용한다...
 
+배열로 만들어 안에 object형식으로 넣었을 경ㅇ.
+
+const videos = [
+        {
+            title:"Hello",
+        },
+        {
+            title:"video 2",
+        },
+        {
+            title:"wow",
+        }
+    ];
+식으로
+
+이럴경우에는 
+가져올 때 
+
+each video in videos
+            li=video.title
+
+식으로 가져온다.
 
 
+--------------------------------
+
+mixin
+
+: 똑똑한 partial
+= 사용하고 싶은 구조를 반복해서 복사 붙여넣기 안하게 도와준다.
+
+
+views안에 mixins폴더를 만들어 주고
+그 안에 반복해야하는 구조의 pug파일을 만들어 준다.
+video.pug
+
+그 안에 
+mixin video(video)
+를 작성하고
+그 아래에 넣고 싶은 구조를 넣는다.
+
+상단에 
+include mixins/video
+추가해 주고
+
+그리고 사용하고 싶은 장소에 
+each potato in videos
+        +video(potato)
+식으로 넣어 준다.
+
+--> html코드를 재사용할 수 있게 해준다.
 
 
 
