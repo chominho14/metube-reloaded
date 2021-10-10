@@ -1,0 +1,96 @@
+
+
+req.body : form에 있는 value의 javascript representation이다.
+
+이것은 middleware를 설정해야만 가능한 일이다.
+
+app.use(express.urlencoded({ extended: true }));
+
+
+다시 연습하기
+
+유저가 form을 get하고, 그 form을 post하면 그게 controller를 발생
+유저들이 redirect, 페이지에서 무엇을 보여준다.
+
+동영상을 upload하는 것을 만들어 보자
+
+1. 컨트롤러에 추가해 준다.
+export const getUpload = (req, res) => {
+  return res.render("asdfasdf");
+};
+
+export const postUpload = (req, res) => {
+
+  return res.redirect("/")/
+};
+
+2. 라우터에 추가해 준다.
+
+videoRouter.route("/upload").get(getUpload).post(postUpload);
+import에도 함수명 추가
+
+3. /upload로 가는 클릭이 가능한 링크를 만들어야 한다.
+
+base.pug에 추가해 준다.
+	nav 
+                ul 
+                    li 
+                        a(href="/videos/upload") Upload Video
+
+
+4. 그러면 에러가 발생한다. src에 upload가 없다.
+
+upload.pug파일을 만들어 준다.
+
+컨트롤러에 가서 pageTitle을 준다.
+
+5.  
+form(method="POST")
+        input(placeholder="Title", required, type="text")
+        input(type="submit" ,value="Upload Video")
+로 폼을 만들어 준다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------
+
+mongodb, mongoose
+
+mongoose를 이용하여 자바스크립트에서 mongodb와 상호작용 할 것이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
