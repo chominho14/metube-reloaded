@@ -53,12 +53,48 @@ form(method="POST")
 
 
 
+우리는 form태그 안에서 action을 해줄 필요 없다.
+get과 post를 모두 같은 upload의 url에서 해결해 주어서!
+
+
+우리는 input에서 req.body에서 data를 받아올 수 있다.
+console.log(req.body)로 확인해 보면 비어있다.
+--> 이유는 이름을 설정해 주지 않았기 때문에.
+
+
+export const postUpload = (req, res) => {
+  const { title } = req.body;
+  const newVideo = {
+    title,
+    rating: 0,
+    comments: 0,
+    createdAt: "just now",
+    views: 0,
+    id: videos.length + 1,
+  };
+  videos.push(newVideo);
+  return res.redirect("/");
+};
+
+이런식으로 간단하게 넣어볼 수 있다.
 
 
 
+-----------------------------------------
 
+결국,
 
+form, get, post, 값 처리, redirect
+대부분 redirect처리한다.
+render도 한다.
 
+과정 정리!!!!!!!
+
+컨트롤러를 만들고 그 컨트롤러가 pug 템플릿을 render하고
+템플릿은 form을 가질 수 있다. 그 form은 post method를 
+가지고 있다. 즉, 그 from 의 데이터를 다른 url에 보내줄 수 있고
+그 url은 post method와 함께 router에 등록돼 있을 것이다.
+그러면 post컨트롤러가 실행되고 필요한 것을 redirect하게 된다.
 
 
 
@@ -72,11 +108,19 @@ mongodb, mongoose
 mongoose를 이용하여 자바스크립트에서 mongodb와 상호작용 할 것이다.
 
 
+mongoDB의 장점은 document-based(문서 기반)이라는 점이다.
 
+--> 보통 다른 db는 sql기반이다(행 기반)
 
+몽고디비는 database도 object로 생각한다.
 
+--> 몽고디비에서 저장하는 것들은 JSON-like-document이다.
 
+pakage.json을 저장하는 방식이랑 비슷하다.
 
+게다가 몽고디비는 document 내부를 검색할 수 있도록 해준다.
+
+우리는 그 document를 이용해 수정, 추가, 삭제 등등을 진행할 수 있다.
 
 
 
