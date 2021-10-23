@@ -1,0 +1,162 @@
+
+
+db를 사용하기 전에 먼저 플랜을 짜보자
+
+
+영상들의 몰고을 볼 수 있고 생성, 영상 정보, 수정, 삭제
+
+이런 행위를 CRUD라고 한다.
+
+C : create( 생성 )
+R : read ( 읽기 )
+U : update ( 수정 )
+D : delete ( 삭제 )
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+src안에 models라는 폴더를 만들어 주고 Video.js라는 파일을 만들어 준다.'
+
+우리는 비디오 model을 만든다
+
+model이 무엇일까
+
+--> mongoose는 mongoDB와 대화할 수 있게 해준다.
+그러기위해선 mongoose에 작업을 해줘야 한다.
+1. 우리 애플리케이션의 데이터들이 어떻게 생겼는지 알려주기.
+-> 비디오에 제목, 세부상항 등등
+
+결국 우리는 video.js를 통해 database에 우리의 데이터들이 어떻게
+생겼는지 알려주게 한다.
+
+
+video.js에도 
+import mongoose from "mongoose";
+로 mongoose를 연결해 준다.
+
+우리는 model을 생성하기 전에 model의 형태를 정의해 준다.
+
+--> 이것을 schema라고 말해준다.
+
+const videoSchema = new mongoose.Schema({
+  titile: String,
+  description: String,
+  createdAt: Date,
+  hashtags: [{ type: String }],
+  meta: {
+    views: Number,
+    rating: Number,
+  },
+});
+
+식으로 데이터들의 타입을 넣은 videoSchema를 만들어 준다.
+id는 만들 필요 없다!
+[] -> type이 string인 array도 만들 수 있다.
+meta데이터에 한 번에 views랑 rating을 넣을 수도 잇다.
+
+이제 다  형태에 대한 정의가 끝났으면 모델을 만들어 준다.
+
+const movieModel = mongoose.model("Video", videoSchema);
+export default movieModel;
+
+로 만들어 주고 export로 다른 곳에서도 사용할 수 있또록 한다.
+
+
+
+최종 모델의 구성
+
+import mongoose from "mongoose";
+
+const videoSchema = new mongoose.Schema({
+  titile: String,
+  description: String,
+  createdAt: Date,
+  hashtags: [{ type: String }],
+  meta: {
+    views: Number,
+    rating: Number,
+  },
+});
+
+const Video = mongoose.model("Video", videoSchema);
+export default Video;
+
+
+이제 이 모델을 server.js 에서 import 해줘야 한다.
+import "./models/Video"; 를 통해
+
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+이제 우리가 올린 비디오를 모두가 알 수 있도록 만들어 주는 작업이
+필요하다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+우리는 모든 걸 초기화 시켜주는 init파일을 만든다
+src아래에 init.js파일 생성..
+
+이 파일이 database와 Video를 import해 준다.
+
+서버에 
+import "./db";
+import "./models/Video";를 옮겨 준다..
+
+그리고 application을 작동시킬 것이다.
+
+server.js에서 
+const handleListening = () =>
+  console.log(`Server listening on port 4000.http://localhost:${PORT}/`);
+
+app.listen(PORT, handleListening);
+코드를 init.js로 옮겨 준다.
+
+--> Port가 정의되지 않아서 일시적으로 오류가 발생한다.
+
+그러므로 server.js에서 Port도 옮겨준다.
+
+--> 그래도 오류가 남아있을 것이다 = app이 정의되지 않아서.
+
+이것을 해결하기 위해서는 먼저 server.js에서 app을 configure한다.
+
+server.js에서 export default app;으로 내보낼 수 있게 한다.
+
+그 후 내보낸 것을 받을 수 있게 하기 위해 init.js에서
+import app from "./server";로 받는다.ㅏ.
+
+이러한 관련된 부분들에 따라 분리 작업을 하는 이유는
+server.js는 express된 것들과 server의 configuration에 
+관련된 코드만 처리하기 위해 만들어졌기 때문이다.
+따라서 database나 models 같은 것들은 다른 파일에서 import하게
+만들어 준다.
+
+
+이렇게 작업을 해도 아직 정상적으로 작동하지 않는다.
+
+이유는 nodemon은 현제 server.js를 관찰하는데 server.js는
+app 을 export 할 뿐 작동시키지는 않기 때문이다.
+
+--> 이 문제를 해결하기 위해 packge.json을 수정해야 한다.
+
+scripts 항목에서 dev의 항목을 바꿔준다.
+맨 마지막에 server.js를 init.js로 !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
