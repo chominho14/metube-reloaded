@@ -1,0 +1,89 @@
+
+
+실제로 update하기
+
+
+1. 일일이 업데이트 하기.
+
+export const postEdit = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, hashtags } = req.body;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.render("404", { pageTitle: "Video not fountd." });
+  }
+  video.title = title;
+  video.desctiption = description;
+  video.hashtags = hashtags.split(",").map((word) => `#${word}`);
+  await video.save();  
+  return res.redirect(`/videos/${id}`);
+};
+이렇게.
+
+하지만 굉장히 귀찮은 작업이다.
+
+항목이 작을 때는 일일이 가능하지만 form의 항목이 많을 경우에는 힘들다.
+
+하지만 문제가 있다.
+
+해쉬태그를 저장할 때마다 #기호가 앞에 붙는다.(여러개도 붙음)
+따라서 해결해 줘야 한다.
+--> 해쉬태그가 없을때만 추가해 준다.
+
+코드를 수정해 준다.
+
+video.hashtags = hashtags.split(",").map((word) => word.startsWith('#')? word : `#${word}`);
+
+로!!
+
+이 과정을 postUpload에서도 해주어야 한다. 똑같은 과정이 있기 때문에
+하지만 이 방법은 구리다.
+복사 붙여넣기를 했기 때문에.
+
+이것을 해결해 보자.
+
+
+영상을 만들고 저장하는 것 하나의 function에서 다 마무리 할 것이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
