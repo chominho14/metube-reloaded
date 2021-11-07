@@ -1,0 +1,85 @@
+
+
+
+많은 middleware를 사용해서 중간에 가로채 작업을 할 수 있다.
+
+
+아직 findByIdAndUpdate를 위한 pre middleware는 없다.
+
+findByIdAndUpdate는 save hook을 호출하지 않는다.
+그리고 findByIdAndUpdate에서는 업데이트하려는 문서에 접근 할 수 없다.
+
+video.js에서 함수로 만들어 추가해 주고(export를 한다.)
+
+export const formatHashtags = (hashtags) =>
+  hashtags.split(",").map((word) => (word.startsWith("#") ? word : `#${word}`));
+
+로 바꾸고 
+hashtags: formatHashtags(hashtags)
+를 사용해 바꿔준다.
+
+반복적인 코드는 함수로 만들어 사용하면 편리하다.
+
+Static
+
+우리는 video 모델의 function들을 많이 쓰고있다.
+우리도 이런 function들을 만들 수 있고 그걸 어떻게 하는지 보자.
+
+Static을 생성하기위해 필요한 것들은
+1. Schema.static
+2. function
+3. 만들고자 하는 static의 이름
+
+video.js에
+
+videoSchema.static("formatHashtags", function (hashtags) {
+  return hashtags
+    .split(",")
+    .map((word) => (word.startsWith("#") ? word : `#${word}`));
+});
+
+추가해 주고 
+
+video컨트롤러에서 
+
+hashtags: Video.formatHashtags(hashtags)
+를 추가해 준다.
+
+이렇게 우리는 static function을 만들어 사용할 수 있다.
+
+
+이제 mixin을 수정해서 hashtags가 보이도록 해줄 것이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

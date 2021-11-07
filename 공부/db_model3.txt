@@ -46,16 +46,143 @@ video.hashtags = hashtags.split(",").map((word) => word.startsWith('#')? word : 
 영상을 만들고 저장하는 것 하나의 function에서 다 마무리 할 것이다.
 
 
+더 나은방법으로 update를 해보자.
+
+그러기 위해 findOneAndUpdate()라는 function에 대해 공부하자.
+
+
+https://mongoosejs.com/docs/api/model.html
+
+findOne()은 무슨 조건이든지 지정할 수 있다.
+예를 들면 제목이 Hello인 영상을 하나 검색할 수 있다.
+
+하지만 영상을 id로만 찾을 거란 걸 미리 알고 잇으면  findById를 사용하며 ㄴ된다.
+
+우리는 id로 update를 하므로 findByIdAndUpdate를 사용하면 된다.
+두 개의 인수가 필요한데 하나는 업데이트 하고자 하는 영상의 id, 또 하나는
+ 업데이트할 정보 혹은 내용.
+
+export const postEdit = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, hashtags } = req.body;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.render("404", { pageTitle: "Video not fountd." });
+  }
+  await Video.findByIdAndUpdate(id,{
+    title,
+    description,
+    hashtags:hashtags
+    .split(",")
+    .map((word) => (word.startsWith("#") ? word : `#${word}`)),
+  });
+  return res.redirect(`/videos/${id}`);
+};
+로 사용해 준다.
+
+exist()이해하기....(이해 X)
+--> 필터를 필요로 하고 영상의 어떤 property도 필터가 가능하다.
+
+
+우리는 지금 해시태그들을 처리하고 있다.
+
+mongoose에는 저장하기 전에 변경하거나 없데이트 전에 이거 저거 시킬 수 있다.
+
+--> Middleware라고 한다.
+,pre, post, hook 등 이 있다.
+
+이런 것들이 object가 저장 되기 전에 무엇인가 할 수 있게 틈을 만들어 준다.
 
 
 
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
+1. 몽고 사용하기 
+> mongo
+
+2. 내가 가진 db 보기 
+> show dbs
+
+3. 현재 사용 중인 db 확인 
+> db
+
+4. 사용할 db 선택하기 
+> use dbName
+(현재 수업에서는 `use wetube`)
+
+5. db 컬렉션 보기 
+> show collections
+
+6. db 컬렉션 안에 documents 보기
+> db.collectionName.find()
+(현재 수업에서는 `db.videos.find()`)
+
+7. db 컬렉션 안에 documents 모두 제거하기 
+> db.collectionName.remove({})
+(현재 수업에서는 `db.videos.find({})`)
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+1. DeprecationWarning에 대해.. useFindAndModify: false로 설정하면 해결됨
+2. middleware는 무조건 model이 생성되기 전에 만들어야 한다
+3. mongoose의 middleware에서 this키워드는 저장하고자 하는 문서를 가리킴
+4. middleware에서 해시태그 관리 구현
 
 
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
+hook, middleware
 
+express의 morgan과 비슷하다.
+
+save하기 전, 후로 middleware를 적용하거나 function을 실행할 수 있다.
+
+schema.pre('save', async function(){
+	await doStuff();
+	await doMoreStuff();
+	~~
+});
+
+이것을 적용시키기 위해
+models, Video.js로 가서 작업하자.
+
+middleware는 무조건 model이 생성되기 전에 만들어야 한다.
+
+this를 사용할 수 있는데 이것은 우리가 저장하고자 하는 문서를 가리킨다.
+
+videoSchema.pre("save", async function () {
+  console.log("We are about to save : ", this);
+});
+
+중간에 가로채 값을 넣어준다.
+
+이제 create에 잇는 hashtags function을 지울 것이다.
+
+그리고 middleware에서 해쉬태그를 넣는 방법을 사용한다.
+
+이렇게 하지 않으면 input에 입력된 값이 하나의 element로 array에 입력
+되기 때문..
+
+코드로 보면
+
+video.js에서 const Video~.model하기 전에
+
+videoSchema.pre("save", async function () {
+  this.hashtags = this.hashtags[0]
+    .split(",")
+    .map((word) => (word.startsWith("#") ? word : `#${word}`));
+});
+
+추가.
+
+컨트롤러에서
+
+      hashtags,
+로 변경
+
+우린 update를 위한 middleware가 하나 더 필요하다.
 
 
 
