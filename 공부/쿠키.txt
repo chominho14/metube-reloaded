@@ -1,0 +1,114 @@
+
+
+쿠키의 property에는 
+Name, Value, Domain, Path, Expires/ Max-Age
+
+secret : 우리가 쿠키에 sign할 때 사용하는 string이다.
+쿠키에 sign하는 이유는 백엔드가 쿠키를 줬다는 걸 보여주기 위함이다.
+누군가 해킹해서 나인척 할 수 있다
+따라서 secret은 길게 작성하고 무작위로 강력하게 만들어야 한다.
+
+
+Domain : 이 쿠키를 만든 백엔드가 누구인지 알려준다.
+쿠키가 어디에서 왔는지, 어디로 가야하는지 알려준다.
+
+Expires : 세션의 만료에 관련된 것이다.
+대부분 브라우저를 켜놓는 동안은 유지되도록 되어 있다.
+
+Max-Age : 언제 세션이 만료되는 지 알려준다.
+
+cookie : {
+	maxAge:원하는시간,
+}
+으로 만료시간을 설정할 수 있다.
+
+
+이제 url을 보호할 작업을 해줄 것이다.
+이것을 위해 환경변수를 만들어 주어야 한다.
+.env파일을 만들어 주고(env파일은 src밖에 만들고, package.json옆에 두어야 한다.)
+.gitignore에 .env를 추가해 준다.(git에 올라가면 안되므로)
+
+.env에는 코드에 들어가면 안되는 값들을 추가한다.
+보여지면 안되는 API키나 secret, url등등
+
+COOKEY_SECRET=sefkjdlfkjaselifjsdkfjlasleijflksdjf
+DB_URL=mongodb://127.0.0.1:27017/metube
+
+하지만 오류..
+process.env.DB_URL 식으로 작성한다.
+
+db.js에서도 바꿔준다.
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+우리가 사용하고 싶은 것은 dotenv라고 불린다.
+
+dotenv 패키지가 하는 일은 우리의 env파일을 읽고 각각의 변수들을
+process.env안에 넣어줄 것이다.
+
+dotenv를 설치해 준다.
+
+npm i dotenv
+
+사용은
+
+require('dotenv').config() 로 사용한다.
+이 코드는 가능한한 가장 먼저 사용해야 한다.
+env폴더에서 불러와 사용해야 하므로 
+
+우리는 init.js에서 시작하므로 init.js맨 위에 적어준다.
+
+우리는 import, require 두 가지 방법을 사용해 받아오고 있다.
+
+1. dotenv를 사용하고 싶은 모든 파일에 require을 추가한다.
+이건 번거롭다.
+
+2. require부분을 import로 바꿔줄 것이다.
+
+import "dotenv/config";
+를 추가해 오류를 해결해 준다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+깃헙 로그인
+
+token하고 secret 등을 필요로 한다.
+
+
+깃허브 OAuth Apps
+https://github.com/settings/developers
+
+깃허브 OAuth Apps 공식문서
+https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps
+
+참고.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

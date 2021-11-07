@@ -56,6 +56,104 @@ localsMiddleware의 위치는 sessionMiddleware 다음에 해야한다.
 아직까지는 코드를 저장할때마다 session은 사라진다.
 
 
+express-session은 session이라는 middleware가 브라우저에 쿠키를 전송한다.
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+우리는 이제 session과 mongoDB를 연결시켜 볼 것이다.
+
+session data가 쿠키 안에 저장되지 않는다.
+
+세션 아이디만 저장된다.  session data는 서버쪽에 저장된다.
+
+즉,
+session id => 쿠키
+session data => 서버
+에 저장된다.
+
+서버에 저장되는 default session storage는 MemoryStore이고,
+실제 사용하기 위해 있는 건 아니다.
+
+그래서 우리는 session store을 사용해야 한다.
+--> session을 db에 저장시켜야 한다.
+
+우리는 그러기 위해 connect-mongo를 사용할 것이다.
+
+connect-mongo는 세션을 MongoDB에 저장할 것이다.
+
+설치를 해야 한다.
+
+npm install connect-mongo
+
+그리고 MongoStore 을 import 해야한다.
+
+그 후 
+
+app.use(
+  session({
+    secret: "Hello!",
+    resave: true,
+    saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: "mongodb://127.0.0.1:27017/metube" }),
+  })
+);
+
+로 수정한다.
+
+이렇게 추가해 주면 mongoDB에 sessions이 추가될 것이다.
+
+이제 세션을 만들어 준다.
+
+이제는 서버를 재시작해도 DB에 기억되어 있을 것이다.
+
+이 상태로 로그인을 하면 
+session 정보에는 loggedIn이 true로, user id등등이 있다.
+
+이제 해 줘야 할 것은
+
+mongoUrl에 들어있는 주소를 변수로 만들어 주고,
+secret은 말 그대로 비밀이여야 한다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+resave와 saveUninitialized의 차이점과 이걸 false로 바꾸는 것을 배운다.
+
+사용자에게 쿠키를 주고 , session은 db에 저장하는 것이다.
+
+만약 봇(가짜사람)이 웹사이트를 방문하거나, 로그인하지 않고 구경만 하려난 사용자들이
+방문했다고 생각해보자.
+어떻게 할 것인가.
+
+우리가 모든 방문자에 대해 쿠키랑 session을 만들고 이 세션을 db에 저장하는건 좋은 생가이 아니다.
+
+로그인한 사용자의 세션만 저장하는 것이 좋다.
+
+모든 방문자에 대해 쿠키를 주지 않을 것이다.
+
+우리는 로그인을 하면 쿠키를 넘겨줄 것이다.
+
+resave 를 false로 줄 것이다. 그리고 saveUninitialized도 false로 준다.
+
+saveUninitialized는 세션이 새로 만들어지고 수정된 적이 없을 때 uninitialized이다.
+--> 새로운 세션이 있는데 수정된 적 없으면 uninitialized인 것이다.
+
+그렇다면 세션은 어디서 수정할까?
+세션은 한 곳에서만 수정될 수 있다. --> 유저 컨트롤러.
+
+따라서 로그인한 유저에게만 쿠키를 줄 것이고 이것으로 인해 
+백엔드가 db에 저장할때 생기는 session인증에서의 문제점을 해결해 준다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+mongoUrl을 string으로 붙여넣은 방식은 배포할 때를 위해 하지 않는 것이 좋다.
+
+
+
+
+
 
 
 
