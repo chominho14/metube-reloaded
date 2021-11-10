@@ -179,8 +179,122 @@ npm install node-fetch@2.6.1 명령어 실행하시면 강의처럼 잘 굴러�
 
 이제 fetch를 백엔드에서 어떻게 사용하는지 알아보자.
 
+node-fetch라는 패키지를 사용할 것이다.
+
+npm install node-fetch@2.6.1
+
+유저 컨트롤러에
+import fetch from "node-fetch";
+추가
 
 
+export const finishGithubLogin = async (req, res) => {
+  const baseUrl = "https://github.com/login/oauth/access_token";
+  const config = {
+    client_id: process.env.GH_CLIENT,
+    client_secret: process.env.GH_SECRET,
+    code: req.query.code,
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+  const data = await fetch(finalUrl, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+  const json = await data.json();
+  console.log(json);
+  res.send(JSON.stringify(json));
+};
+
+
+로 사용 가능
+
+이제 3단계로 넘어 간다.
+get url로 넘어가서 인증을 위한 access_token을 보내줘야 한다.
+
+access_token을 갖고 api에 접근한다.
+
+만약 json안에 access_token이 존재 하면 access api를 가져오는 코드를
+짜 준다. 그리고 만약 없다면 로그인페이지로 이동시키고 오류메시지를 뛰운다.
+
+export const finishGithubLogin = async (req, res) => {
+  const baseUrl = "https://github.com/login/oauth/access_token";
+  const config = {
+    client_id: process.env.GH_CLIENT,
+    client_secret: process.env.GH_SECRET,
+    code: req.query.code,
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+  const tokenRequest = await (
+    await fetch(finalUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+  ).json();
+  if ("access_token" in tokenRequest) {
+    const { access_token } = tokenRequest;
+    const userRequest = await (
+      await fetch("https://api.github.com/user", {
+        headers: {
+          Autorization: `token ${access_token}`,
+        },
+      })
+    ).json();
+    console.log(userRequest);
+  } else {
+    return res.redirect("/login");
+  }
+};
+
+로 코드를 수정
+
+아직 email이 null로 못 받아온다. 이것을 설정해 주어야한다.
+
+access_token은 scope에 적은 내용에 대해서만 허용해 준다.
+
+
+Github REST API
+https://docs.github.com/en/rest/reference/users
+
+유저의 email을 받아온 것을 
+
+  const emailData = await (
+      await fetch(`${apiUrl}/user/emails`, {
+        headers: {
+          Autorization: `token ${access_token}`,
+        },
+      })
+    ).json();
+    console.log(emailData);
+  } else {
+    return res.redirect("/login");
+  }
+
+식으로 받아온다.
+
+
+하지만 오류...왜일까..
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+깃헙 아이디를 가지고 있는 사람은 우리에게 email을 제공한다.
+받은 이메일과 우리의 데이터베이스에 있는 이메일이 같을 경우
+그냥 로그인 시켜주는 식으로 코드를 구현해보자.
+
+~~~여기서 부터는 모르겠다...
+작동도 안하고,,,,
+
+github 데이터는 avatarUrl이라는 것을 사용
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 
 

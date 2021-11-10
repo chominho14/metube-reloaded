@@ -1,0 +1,39 @@
+
+로그아웃.
+
+탬플릿을 
+/users/logout으로 바꿔주고 
+
+컨트롤러에서
+
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.redirect("/");
+};
+
+로 세션을 지워주면 로그아웃이 된다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
