@@ -1,0 +1,201 @@
+
+
+프로필 바꾸기, form을 사용하는 연습, 아바타파일
+
+유저 라우터에 있는 edit은 get과 post가 필요하다.
+
+따라서 getEdit, postEdit으로 만들어 준다.
+
+export const getEdit = (req, res) => {
+  return res.render("edit-porfile", { pageTitle: "Edit Profile" });
+};
+
+export const postEdit = (req, res) => {
+  return res.render("edit-profile");
+};
+로 만든다.
+
+
+
+
+유저 컨트롤러에 import를 해주고
+
+userRouter.route("/edit").get(getEdit).post(postEdit);
+
+로 만든다.
+
+템플릿을 만들어 준다.
+
+우선 base.pug를 수정, 
+loggedIn 은 localsMiddleware에서 온 변수이다.
+(res.locals.~= ~ 로 설정되어있는 것은 pug어디든 사용 가능)
+
+이제 edit-profile.pug를 만들어 작업해준다.
+
+form을 만들고 POST로 적용시킨다.
+
+우리는 editprofile에서 name, email, username, location을 수정할 수 
+있게 만들 것이다.
+(비밀번호 변경은 따로 만들 것이다.)
+
+extends base.pug
+
+block content 
+    form(method="POST")
+        input(placeholder="Name",name="name", type="text", required)
+        input(placeholder="Email",name="email", type="email", required)
+        input(placeholder="Username",name="username", type="text", required)
+        input(placeholder="Location",name="location", type="text", required)
+        input(type="submit", value="Update Profile")
+        
+
+우리는 수정하기 전에 우리의 프로필을 먼저 볼 수 있어야 한다.
+--> edit-profile템플릿으로 user object를 가져온다.
+
+원래는 컨트롤러에서 user: req.session.user로 받아와야 하지만
+middlewares.js에서 작업해 놓은 res.locals.loggedInUser을 이용하여
+pug파일에서 바로 사용할 수 있다.(자동적으로 views에 import 됨)
+
+extends base.pug
+
+block content 
+    form(method="POST")
+        input(placeholder="Name",name="name", type="text", required, value=loggedInUser.name)
+        input(placeholder="Email",name="email", type="email", required, value=loggedInUser.email)
+        input(placeholder="Username",name="username", type="text", required, value=loggedInUser.username)
+        input(placeholder="Location",name="location", type="text", required, value=loggedInUser.location)
+        input(type="submit", value="Update Profile")
+        
+
+로 사용 가능
+
+이제 강제로 /user/edit으로 url을 타고 들어오는 사람들을 위해 막아줘야 한다.
+--> 안할시 오류가 난다.
+오류 1. loggedInUser에 접근하려는데 로그인이 되어있지 않으면 생기는 에러
+오류 2. 로그인 돼 있지 않은 사람들은 올 수 없게 만들어야 한다.
+
+url이 작동하지 않고 redirect 될 수 있게 만든다.
+--> route를 보호하는 middleware가 필요하다.
+
+
+오류1 해결 방법
+localsmiddleware에서
+  res.locals.loggedInUser = req.session.user || {};
+로 req.session.user가 비어있어도 갈 수 있도록 만든다.'
+
+오류2 해결 방법
+protectorMiddleware를 만든다.
+
+export const protectorMiddleware = (req, res, next) => {
+  if (req.session.loggedIn) {
+    next();
+  } else {
+    return res.redirect("/login");
+  }
+};
+
+여기서 사용자가 로그인 돼 있지 않을 걸 확인하면, 로그인 페이지로 redirect
+시켜 준다.
+
+
+그리고 로그인 돼 있지 않은 사람들만 접근 할 수 있게하는 middleware도 만들어
+준다.
+
+export const publicOnlyMiddleware = (req, res, next) => {
+  if (!req.session.loggedIn) {
+    return next();
+  } else {
+    return res.redirect("/");
+  }
+};
+
+로
+
+정리하면 protectorMiddleware 에서는 user가 loggedIn 돼 있다면,
+요청을 계속하게 하고 loggedIn이 되어 있지 않으면, 로그인 페이지로 
+redirect 해준다.
+
+publicOnlyMiddleware 에서는 user가 loggedIn 돼 있지 않으면 요청을
+계속하게 하고 loggedIn돼 있으면 / 로 이동시킨다.
+
+이것을 적용시키면, user라우터에서 로그인 되어 있는 사람들만 로그아웃이 가능하도록
+해 주어야 한다. (protectorMiddleware를 추가)
+
+-->
+import {protectorMiddleware,publicOnlyMiddleware} from "../middlewares";
+
+const userRouter = express.Router();
+
+userRouter.get("/logout", protectorMiddleware, logout);
+userRouter.route("/edit").all(protectorMiddleware).get(getEdit).post(postEdit);
+userRouter.get("/github/start", publicOnlyMiddleware, startGithubLogin);
+userRouter.get("/github/finish", publicOnlyMiddleware, finishGithubLogin);
+userRouter.get(":id", see);
+
+export default userRouter;
+로 바꾸어 준다.
+
+이제 rootrouter에도 적용시켜 준다.
+
+
+const rootRouter = express.Router();
+
+rootRouter.get("/", home);
+rootRouter.route("/join").all(publicOnlyMiddleware).get(getJoin).post(postJoin);
+rootRouter
+  .route("/login")
+  .all(publicOnlyMiddleware)
+  .get(getLogin)
+  .post(postLogin);
+rootRouter.get("/search", search);
+
+export default rootRouter;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
