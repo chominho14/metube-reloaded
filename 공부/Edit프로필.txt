@@ -153,10 +153,104 @@ export default rootRouter;
 
 
 
+이 middleware를 video컨트롤러에도 추가한다.
+
+비디오 라우터에도 만든 미들웨어로 보호해 준다.
+이렇게 하는 이유는, 나중에 video model과 user model을 연결 할 것이다.
+
+그래서 우리는 웹사이트에 계정이 있고, 로그인 되어있는 사람만 video를 업로드 
+할 수 있게 해 준다.
+
+videoRouter.get("/:id([0-9a-f]{24})", watch);
+videoRouter
+  .route("/:id([0-9a-f]{24})/edit")
+  .all(protectorMiddleware)
+  .get(getEdit)
+  .post(postEdit);
+videoRouter
+  .route("/:id([0-9a-f]{24})/delete")
+  .all(protectorMiddleware)
+  .get(deleteVideo);
+videoRouter
+  .route("/upload")
+  .all(protectorMiddleware)
+  .get(getUpload)
+  .post(postUpload);
+
+
+그리고 upload비디오는 로그인 된 사람들만 볼 수 있는 거니깐 바꿔준다.
+--> base.pug에서 수정
+
+
+
+이제 유저컨트롤러에서 postEdit 작업을 시작한다.
+
+우선 edit-profile에서 받아온 name,email,username,location을 수정한다.
+
+현재 로그인 되어있는 유저를 어떻게 알 수 있을까?
+--> request object에서 알 수 있다.
+
+req.session.user 을 이용.
+
+export const postEdit = async (req, res) => {
+  const {
+    session: {
+      user: { id },
+    },
+  } = req;
+  const { name, email, username, location } = req.body;
+  await User.findByIdAndUpdate();
+  return res.render("edit-profile");
+};
 
 
 
 
+  const {
+    session: {
+      user: { id },
+    },
+  } = req;
+
+는 
+
+const id = req.session.user.id
+랑 같다.
+
+
+이것을 이용하면
+
+  const {
+    session: {
+      user: { id },
+    },
+    body: { name, email, username, password },
+  } = req;
+
+로 한번에 사용 가능하다(ES6 문법)
+
+findByIdAndUpdate()의 함수는
+두 개의 argument를 받는데, 첫째는 id이다.
+두번째는 Updatequery이다.
+
+--> 유저가 id가 없어 오류가 뜰 것이다.
+
+middlewares.js에서 console.log로 확인해 볼 수 있다.
+확인하면 우리가 _id로 설정해 둔 것을 확인할 수 있다.
+
+그래도 에러!
+
+loggedInUser가 언제 생성된건지 생각해본다.
+middlewares에서 loggedInUser를 req.session.user이라고 정의하고 있다.
+
+그럼 req.session.user은 어디서 생성될까
+--> 로그인 할 때다.
+
+유저컨틀로러에서 req.session.loggedIn=troe;
+req.session.user = user;
+로 입려해 준다.
+
+DB에서는 user를 업데이트햇는데, session은 DB와 연결돼 있지 않아.
 
 
 
