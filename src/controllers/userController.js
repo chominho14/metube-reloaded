@@ -37,6 +37,7 @@ export const postJoin = async (req, res) => {
     });
   }
 };
+
 export const getLogin = (req, res) =>
   res.render("login", { pageTitle: "Login" });
 
@@ -50,6 +51,7 @@ export const postLogin = async (req, res) => {
       errorMessage: "An account with this username does not exists",
     });
   }
+
   const ok = await bcryptjs.compare(password, user.password);
   if (!ok) {
     return res.status(400).render("login", {
@@ -57,6 +59,7 @@ export const postLogin = async (req, res) => {
       errorMessage: "Wrong password",
     });
   }
+
   req.session.loggedIn = true;
   req.session.user = user;
   return res.redirect("/");
@@ -71,6 +74,7 @@ export const startGithubLogin = (req, res) => {
   };
   const params = new URLSearchParams(config).toString();
   const finalUrl = `${baseUrl}?${params}`;
+
   return res.redirect(finalUrl);
 };
 
@@ -81,6 +85,7 @@ export const finishGithubLogin = async (req, res) => {
     client_secret: process.env.GH_SECRET,
     code: req.query.code,
   };
+
   const params = new URLSearchParams(config).toString();
   const finalUrl = `${baseUrl}?${params}`;
   const tokenRequest = await (
@@ -91,6 +96,7 @@ export const finishGithubLogin = async (req, res) => {
       },
     })
   ).json();
+
   if ("access_token" in tokenRequest) {
     const { access_token } = tokenRequest;
     const apiUrl = "https://api.github.com";
@@ -101,6 +107,7 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
+
     const emailData = await (
       await fetch(`${apiUrl}/user/emails`, {
         headers: {
@@ -108,12 +115,15 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
+
     const emailObj = emailData.find(
       (email) => email.primary === true && email.verified === true
     );
+
     if (!emailObj) {
       return res.redirect("/login");
     }
+
     let user = await User.findOne({ email: emailObj.email });
     if (!user) {
       user = await User.create({
@@ -126,6 +136,7 @@ export const finishGithubLogin = async (req, res) => {
         location: userData.location,
       });
     }
+
     req.session.loggedIn = true;
     req.session.user = user;
     return res.redirect("/");
@@ -142,13 +153,34 @@ export const logout = (req, res) => {
 export const getEdit = (req, res) => {
   return res.render("edit-profile", { pageTitle: "Edit Profile" });
 };
+
 export const postEdit = async (req, res) => {
   const {
     session: {
-      user: { _id },
+      user: { _id, email: sessionEmail, username: sessionUsername },
     },
     body: { name, email, username, location },
   } = req;
+  // 예외처리(다른유저의 email과 username을 입력하면 에러)
+  let searchParam = [];
+
+  if (sessionEmail !== email) {
+    searchParam.push({ email });
+  }
+
+  if (sessionUsername !== username) {
+    searchParam.push({ username });
+  }
+
+  if (searchParam.length > 0) {
+    const foundUser = await User.findOne({ $or: searchParam });
+    if (foundUser && foundUser._id.toString() !== _id) {
+      return res.status(400).render("edit-profile", {
+        pageTitle: "Edit Profile",
+        errorMessage: "This username/email is already taken.",
+      });
+    }
+  }
 
   const updatedUser = await User.findByIdAndUpdate(
     _id,
@@ -161,7 +193,9 @@ export const postEdit = async (req, res) => {
     { new: true }
   );
   req.session.user = updatedUser;
+
   return res.redirect("/users/edit");
 };
+
 export const edit = (req, res) => res.send("Edit User");
 export const see = (req, res) => res.send("See User");

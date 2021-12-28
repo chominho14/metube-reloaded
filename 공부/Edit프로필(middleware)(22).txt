@@ -133,6 +133,27 @@ userController에서 exists부분과 같다.
 
 
 
+let searchParam = [];
+
+  if (sessionEmail !== email) {
+    searchParam.push({ email });
+  }
+
+  if (sessionUsername !== username) {
+    searchParam.push({ username });
+  }
+
+  if (searchParam.length > 0) {
+    const foundUser = await User.findOne({ $or: searchParam });
+    if (foundUser && foundUser._id.toString() !== _id) {
+      return res.status(400).render("edit-profile", {
+        pageTitle: "Edit Profile",
+        errorMessage: "This username/email is already taken.",
+      });
+    }
+  }
+
+로 코딩할 수 있다.
 
 
 
