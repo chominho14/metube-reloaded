@@ -246,7 +246,7 @@ middlewares에서 loggedInUser를 req.session.user이라고 정의하고 있다.
 그럼 req.session.user은 어디서 생성될까
 --> 로그인 할 때다.
 
-유저컨틀로러에서 req.session.loggedIn=troe;
+유저컨틀로러에서 req.session.loggedIn=true;
 req.session.user = user;
 로 입려해 준다.
 
