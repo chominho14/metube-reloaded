@@ -1,6 +1,7 @@
 import User from "../models/User";
 import fetch from "node-fetch";
 import bcryptjs from "bcryptjs";
+import { render } from "pug";
 
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 
@@ -117,7 +118,7 @@ export const finishGithubLogin = async (req, res) => {
     ).json();
 
     const emailObj = emailData.find(
-      (email) => email.primary === true && email.verified === true
+      email => email.primary === true && email.verified === true
     );
 
     if (!emailObj) {
@@ -157,10 +158,12 @@ export const getEdit = (req, res) => {
 export const postEdit = async (req, res) => {
   const {
     session: {
-      user: { _id, email: sessionEmail, username: sessionUsername },
+      user: { _id, avatarUrl, email: sessionEmail, username: sessionUsername },
     },
     body: { name, email, username, location },
+    file,
   } = req;
+  console.log(file);
   // 예외처리(다른유저의 email과 username을 입력하면 에러)
   let searchParam = [];
 
@@ -185,6 +188,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
+      avatarUrl: file ? file.path : avatarUrl,
       name,
       email,
       username,
@@ -197,5 +201,45 @@ export const postEdit = async (req, res) => {
   return res.redirect("/users/edit");
 };
 
-export const edit = (req, res) => res.send("Edit User");
+export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly === true) {
+    return res.redirect("/");
+  }
+
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+
+export const postChangePassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirmation },
+  } = req;
+
+  const user = await User.findById(_id);
+
+  const ok = await bcryptjs.compare(oldPassword, user.password);
+  if (!ok) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The current password is incorrect",
+    });
+  }
+
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The password does not match the confirmation.",
+    });
+  }
+
+  user.password = newPassword;
+
+  await user.save();
+  // send notification
+
+  return res.redirect("/users/logout");
+};
+
 export const see = (req, res) => res.send("See User");

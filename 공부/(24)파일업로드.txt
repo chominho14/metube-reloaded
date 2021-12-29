@@ -1,0 +1,199 @@
+
+단계 1.
+input을 만든다.
+
+파일을 업로드 할 수 있게 만들어 준다.
+edit-profile.pug에 label과 input을 추가한다.
+
+
+    label(for="avatar") Avatar
+    input(type="file", id="avatar", name="avatar", accept="*/image")
+
+--> accept="image/*" 로 주게 되면 image파일만 받게 된다.(png, jpeg등등)
+
+
+단계 2.
+미들웨어 사용하기 ( multer )
+파일을 업로드 할 수 있게 해준다.
+https://www.npmjs.com/package/multer
+
+npm install --save multer 로 다운
+
+사용방법.
+1. 
+
+form 을 multipart form으로 만들면 된다.
+
+form(method="POST", enctype="multipart/form-data")
+으로 사용하면 된다.
+enctype 과정은 파일을 백엔드로 보내기 위해 필요한 encoding과정이다.
+
+2.
+
+middleware를 만들어 주어야 한다.
+
+const express = require('express')
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
+
+const app = express()
+
+식으로 사용
+
+그리고 route에서
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+})
+로 사용
+
+--> 적용시키기
+
+middleware.js에 가서 작업한다.
+상단에
+import multer from "multer";추가
+
+export const uploadFiles = multer({
+  
+})
+
+라우터에 가서 edit profile에 가서 작업해준다.
+
+userRouter
+  .route("/edit")
+  .all(protectorMiddleware)
+  .get(getEdit)
+  .post(uploadFiles.single("avatar"), postEdit);
+
+로 사용한다.
+우선 url이 있어야 한다.( rounte("/edit")으로 충족
+그리고 post에서 .post(업로드변수명.single(문자열name), post될때 함수) 식으로 사용한다.
+즉, 미들웨어 실행 후 postEdit이 실행된다.
+multer 는 input으로 avatar 파일을 받은 후 upload에 저장 그 후 정보를 postEdit에 전달한다.
+
+--> 정리해보자면
+사용자가 url로 form을 보내면, middleware에서 사진을 시스템에 저장하고 req.file을 추가한다.
+그리고 나서 컨트롤러가 실행되면 req.file과 req.body를 사용할 수 있다.
+
+
+multer의 좋은 점은 request 에 req.file이 추가된다.
+컨트롤러에서 req.file을 사용할 수 있다.
+
+여기서 중요한 건 path이다 
+path는 우리가 db에 만들어 두었던 avatarUrl과 연결된다.
+
+session부분에서 file에 path를 추가한 뒤 우리는 upldatUser에 
+findByIdAndUpdate부분에서 avatarUrl:path를 넘겨줄 것이다.
+
+그리고 이제 오류들을 처리해 주어야 한다.
+아바타를 바꾸지 않고 이름만 바꿔서 update하게 되면 백엔드에서 오류가 난다.
+file의 path를 찾을 수 없어서 오류.
+파일을 안 보내면 req안에 file은 undefined된다.
+
+우린 사용자가 이미 아바타가 있다면, undefined인 아바타를 보내면 안된다.
+session에서 우린 avatarUrl을 가지고 있는다.
+
+findByIdAndUpdate부분에서 가벼운 if,else문으로 처리할 수 있다.
+
+ avatarUrl: file ? file.path : avatarUrl,
+
+avatarUrl의 file이 있으면 file.path로 경로를 받아오고 아니면 session에 있는
+avatarUrl을 받아온다.
+
+git에서 commit하기 전에 uploads폴더를 .gitignore에 추가해준다.(보안을 위해)
+
+! ! ! ! ! 중요 ! ! ! ! !
+DB에는 파일을 저장하면 안 된다.
+폴더에 파일을 저장하고 db에는 파일의 위치만 저장하는 것이다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+이제 Edit-profile페이지에서 이미지를 넣어 준다.
+
+    img(src=loggedInUser.avatarUrl, width="100", height="100")
+
+로 열어준다.
+하지만 오류.
+경로에 문제가 있다. 절대경로로 고쳐주기.
+    img(src="/"+loggedInUser.avatarUrl, width="100", height="100")
+
+이유는 우리는 서버를 만들면서 uploads/파일명 의 url을 만든 적 없다.
+express에게 이 uploads의 url을 알려주어야 한다.
+
+우리는 안전하게 url들을 보내주기 위해서
+static files serving이라는 것을 활성화 할 것이다.
+--> 폴더 전체를 브라우저에게 노출 시킨다.
+
+1. 서버에서 /uploads route를 만들어 준다.
+app.use("/uploads", express.static("uploads"));
+를 추가 
+uploads를 간다면 노출해준다. express.static을 이용해서 디렉토리 내부의 파일을 제공.
+
+이렇게 하면 우리가 업로드한 사진이 웹페이지에 보이면서 완료된다.
+하지만 다른사진을 업데이트하면 기존에 있던 사진이 저장된 체로 새로운 사진이 업데이트된다.
+
+문제 1. 파일을 서버에 저장하고있다.
+서버는 종료되고 시작되는 것을 반복한다.
+그렇게 되면 서버에 저장돼 있던 파일이 날라간다.
+만약 사용자가 많아 서버를 두 개 이용하면 서버에 저장하는 것이 좋을까?
+아니다. 그렇게 되면 두 개의 서버에서 uploads폴더를 공유해야 하기 때문이다.
+또 서버가 죽게 되면 파일이 날라가므로 좋지 않다.
+
+이 방법을 나중에 바꿀 것이다.
+파일을 서버에 저장하지 않고 다른 곳에 저장하는 방식.(->서버 배포할 때)
+
+파일의 원본은 amazon이 하드드라이브 같은 곳에 저장하면 된다.
+우리의 db에는 url을 저장하면 되고.
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
