@@ -1,0 +1,418 @@
+
+
+1.
+사용자의 프로필 창에 들어가면 이름과 아바타 같은 유저의 정보를 볼 수 있고
+유저가 업로드한 영상들을 볼 수 있게 만들 것이다.
+
+2.
+추가적으로 영상을 틀면 누가 그 영상을 올렸는지 알 수 있게 만든다.
+
+3.
+그리고 해당 영상의 소유자가 아니면 edit video, delete video가 보이지 않도록 만들 것이다.
+
+
+-> 누가 비디오 파일을 업로드 했는 지 알아야 한다.
+db에서 owner항목을 만들어 알 수 있게 한다. 그리고 user에서 video list를 추가한다.
+
+비디오는 하나의 owner만 가질 수 있게 하고 user에서는 여러 개의 video를 만들 수 있도록
+작업한다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+model을 수정해준다.
+그 전에 my profile의 링크를 만든다.
+-> base.pug 작업
+
+li 
+        a(href=`/users/${loggedInUser._id}`) My Profile               
+                        
+my profile은 로그인된 사용자를 위한 것이니깐 로그인한 사용자의 id를 사용한다.
+
+
+아직 페이지를 들어갈 수 없다. 이 작업 하기.
+-> 유저라우터에서 작업
+
+이 페이지는 모두가 볼 수 있게 만들어야 하므로 req.session.user._id로 가져오지 않을 것이다.
+url에서 가져온다.
+
+유저컨틀롤러에서
+
+export const see = (req, res) => {
+  const { id } = req.params;
+  return res.render("users/profile", { pageTitle: "User Profile" });
+};
+
+로 작업 
+하지만 아직 views디렉토리에 profile이 없으므로 오류.
+profile.pug 만들어 주기
+
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  return res.render("users/profile", { pageTitle: "User Profile", user });
+};
+
+식으로 변형하여 db안에있는 user에서 id 를 가져온다.
+
+이 화면은 로그인이 되어 있지 않더라도 접속이 가능하다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+video와 user을 연결시키는 방법.
+이 작업을 하기 전에 video와 user 모두 정보를 지워준다.
+
+지우고 새로고침 했을 시 오류가 걸리므로 오류처리하기
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).render("404".{pageTitle:"User not found."});
+  }
+  return res.render("users/profile", {
+    pageTitle: user.name,
+    user,
+  });
+};
+
+로 유저가 없을 시에 404오류를 보이게 한다.
+
+
+
+
+video owner 작업
+
+
+몽구스나 몽고디비를 활용해 두 db테이블을 연결하려면 id를 이용해야 한다.
+id가 pk의 역활을 한다.
+
+user에는 해당 user가 업로드한 모든 영상의 id를 저장한다.
+vido에는 해당 영상을 올린 User 의 id를 저장할 것이다.
+
+
+model디렉토리에서
+
+video의 db작업 부분에서
+
+owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+
+를 추가해 준다.
+타입은 ObjectId로 해주고 이것이 model user에서 온다고 알려주는 방식이다.
+User는 User.js에서 mongoose.model에서의 이름을 가져오면 된다.
+
+이제 video 컨트롤러에서 postUplode 컨트롤러에 user관련 코드를 추가해 준다.
+
+export const postUpload = async (req, res) => {
+  const {
+    user: { _id },
+  } = req.session;
+  const { path: fileUrl } = req.file;
+  const { title, description, hashtags } = req.body;
+  try {
+    await Video.create({
+      title,
+      description,
+      fileUrl,
+      owner: _id,
+      hashtags: Video.formatHashtags(hashtags),
+    });
+    return res.redirect("/");
+  } catch (error) {
+    return res.status(400).render("upload", {
+      pageTitle: "Upload Video",
+      errorMessage: error._message,
+    });
+  }
+};
+
+식으로 user의 _id를 reqest session에서 가져온 뒤
+owner에 _id만 전달해 주면 user의 db와 연결 되는 것이다.
+
+---> 이렇게 objectId를 user와 video를 연결하는 게 중요한 이유는
+	populate에 사용되기 때문이다.
+
+populate가 있어야 영상 주인만 아래 버튼을 보일 수 있게 만들기 때문에 중요하다
+-> owner만 수정할 수 있게 하는 것이 중요하다.
+
+이제 버튼이 owner한테만 보이도록 수정해준다.
+
+localsMiddleware에서 현재 로그인 된 사용자가 누구인지 알려주는 부분을 이용한다.
+
+이것을 코드로 구현하기 위해선.
+로그인된 사람의 id와 영상의 owner의 id가 일치하면 이 영상의 주인이라는 말이다.!!!!!!
+
+템플릿 수정 watch.pug
+
+if String(video.owner) === String(loggedInUser._id)
+        a(href=`${video.id}/edit`) Edit Video &rarr;
+        br
+        a(href=`${video.id}/delete`) Delete Video &rarr;
+
+으로 video.owner와 loogedInUser._id가 일치하면 보일 수 있게 만든다.
+
+
+
+다음 작업은 영상 소유자의 이름을 가져와야 한다.
+-> 누가 비디오를 만들었는지 보여주고 그 사람의 프로필을 볼 수 있는 링크를 만들 것이다.
+
+watch페이지를 수정 watch 컨트롤러를 작업
+
+export const watch = async (req, res) => {
+  const { id } = req.params;
+  const video = await Video.findById(id);
+  const owner = await User.findById(video.owner);
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "Video not fountd." });
+  }
+  return res.render("watch", { pageTitle: video.title, video, owner });
+};
+
+로 작업
+db안에 User 에서 video의 owner을 꺼낸 뒤 랜더링할때 같이 보내준다.
+
+그리고 템플릿에서 보여준다.( watch.pug 작업 )
+
+    div 
+        small Uploaded by #{owner.name}
+
+추가.
+
+하지만 이러한 db와 자주 왔다갔다하는 작업을 여러번 하는 것은 좋지 않다.
+이것을 수정해 주는 작업을 한다.
+
+이러한 방식 말고 reference를 이요하는 방식을 사용해보자.
+몽구스가 나를 찾게 만들어 본다
+
+const video = await Video.findById(id).populate("owner");
+
+로 populate("레퍼런스");로 사용가능하다
+이렇게 작성하면 user의 정보까지 가져올 수 있다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+이제 특정 사용자가 업로드한 모든 영상을 볼 수 있게 만든다.
+
+유저 컨트롤러에서 see부분에서 user에 대한 id를 넘기는데 
+여기서 video의 owner id에 대한 작업을 실행한다.
+video의 owner id가 url에 있는 id와 같은 video를 찾느다.
+
+즉, 영상 소유자의 id와 params의 id가 같은 모든 영상을 찾아준다.
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).render("404", { pageTitle: "User not found." });
+  }
+  const videos = await Video.find({ owner: user._id });
+  console.log(videos);
+  return res.render("users/profile", {
+    pageTitle: user.name,
+    user,
+    videos,
+  });
+};
+
+에서
+const videos = await Video.find({ owner: user._id });
+가 그 작업을 해 준다.
+db안에 Video에서 user._id인 것들만 가져온다.
+
+그리고 우리는 profile.pug에서 그 사람이 올린 영상들을 보여준다.( home에서 동영상을 보여주는 방식과 같다 )
+
+유저 컨트롤러에서 videos array를 보내고 템플릿에서 
+
+extends ../base
+include mixins/video
+
+block content 
+    each potato in videos
+            +video(potato)
+    else 
+        li Sorry nothing found.
+
+로 동영상을 보여준다.(mixin 사용)
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+이 작업들을 더 최적화 시켜보자.
+
+db model을 수정해야 하므로 db에 저장되어 있는 정보들을 다시 삭제
+
+어떤 유저가 업로드한 모든 영상들을 찾기위해 populate를 사용하여 코드를 최적화 할 수 있다.
+
+video는 하나의 user를 가지지만 user는 여러 videos를 가질 수 있다.
+이 논리를 기반으로 우리는 user model안에 videos라는 array를 만들 것이다.
+
+ videos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Video" }],
+
+로 배열 안에 ObjectId를 Video.js에서 가져와 담아준다.
+
+비디오 컨트롤러 - postUpload
+이 부분에서 Video owner에 사용자 _id를 저장하고 있다.
+하지만 이제는 업로드 될 영상의 id를 user model에도 저장해 줘야 한다.
+
+그래서 새로 업로드 하는 영상의 id 를 user model에 저장해 줄 것이다.
+
+  try {
+    const newVideo = await Video.create({
+      title,
+      description,
+      fileUrl,
+      owner: _id,
+      hashtags: Video.formatHashtags(hashtags),
+    });
+    const user = await User.findById(_id);
+    user.videos.push(newVideo._id);
+    user.save();
+
+이렇게 수정해 준다.
+user에 User에서 _id를 찾아 주고 
+user안에 videos(만들어 두었던 배열)에 push함수를 이용하여 newVideo._id를 넣어 준다.
+
+그리고 저장한다.
+
+이러면 아직 my profile에서 오류가 난다.
+-> 유저 컨트롤러를 수정하여 해결하자.
+
+  const user = await User.findById(id).populate("videos");
+로 수정하면 videos의 array의 정보가 넘어온다.
+
+이제 profile.pug를 수정해준다.
+
+이것을 우리는 relationship라고 부른다.
+우리가 만든 것은 일대다 relationship이다.
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+
+보안강화
+
+owner가 아닌 사람들이 수정할 수 있는 페이지를 볼 수 없게 만들 것이다.
+(아직은 들어가는 버튼만 없애도록 했다. url을 입력해서 들어가는 것을 막자)
+
+약간의 버그가 있는데 내가 user를 save할 때마다 비밀번호를 반복적으로 해슁하고 있다.
+이것은 좋지 않다.
+-> 영상을 업로드할때마다 비밀번호의 해쉬가 다시 해슁되어 비밀번호가 바뀐다.
+	그래서 로그인이 되지 않는다.
+
+--> 특정 조건에서만 비밀번호가 hash 되도록 만들어 준다.
+미들웨어를 바꾸어 준다.
+
+버그1.
+
+유저js 에서
+userSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcryptjs.hash(this.password, 5);
+  }
+});
+로 수정
+-> 비밀번호가 수정될 때만 hash가 일어난다.(isModified())이용
+
+버그2.
+유저컨트롤러에서 getEdit은 사용자에게 edit form을 보여주는 역할을 한다.
+여기서 edit form이 영상 주인에게만 나타나도록 만들어 준다.
+pug파일에서 if문으로도 막을 수 있지만 이것은 다른 사용자가 우회해서 들어갈 수 있다.
+따라서 getEdit을 
+export const getEdit = async (req, res) => {
+  const { id } = req.params;
+  const {
+    user: { _id },
+  } = req.session;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "Video not found." });
+  }
+  if (video.owner !== _id) {
+    return res.status(403).redirect("/");
+  }
+  return res.render("edit", { pageTitle: `Edit: ${video.title}`, video });
+};
+이렇게 수정해줌으로써 백앤드에서 접근하는 것을 막아 줄 수 있다.
+
+하지만 video.owner !== _id 부분은 비교가 되지 않는다.
+이유는 자바스크립트는 ===, !== 로 비교할 때 데이터 형식도 비교하기 때문이다.
+확인해 보면 video.owner은 Object이고
+_id는 String이다. 따라서 같은 데이터형식으로 바꾸어 비교해줘야 한다.
+
+
+이것을 postEdit도 해준다.
+
+백앤드에서 이러한 작업은 중요하다. 프론트엔드에서 보이지 않게 만들었다고 해서 완벽하지 않다.
+백엔드에서 꼭 보호해 주어야 한다.
+
+중요 부분
+const {
+    user: { _id },
+  } = req.session;
+const video = await Video.findById(id);
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "Video not fountd." });
+  }
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
+  }
+
+
+보안 - 영상 소유주가 아닌 사람들이 영상을 수정/삭제하지 못하게 만드는 것
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
