@@ -1,0 +1,74 @@
+
+
+css 작업.
+
+1.
+전에 이뻐보이려고 사용했던 스타일은 지운다.
+
+2.
+font-awesome을 사용할 것이다.
+https://cdnjs.com/libraries/font-awesome
+
+url복사후 pug에 붙이기.
+
+3.
+client에 작업하기
+client폴더 안에 components랑 screens 폴더 만들기
+
+components폴더 안에는 headers, footers 등을 넣는다
+screens에는 home, search 등을 넣는다.
+
+
+
+
+reset파일 복사붙여넣기
+
+https://meyerweb.com/eric/tools/css/reset
+
+mixins나 partials 폴더의 파일들은 components 폴더에 작업
+기본 pug파일들은 screens 폴더에 작업한다.
+
+
+
+double populate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
