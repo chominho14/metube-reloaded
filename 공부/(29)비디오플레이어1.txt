@@ -1,0 +1,201 @@
+
+
+비디오 플레이어 만들기
+
+비디오 플레이어는 다른 페이지에 필요 없고 비디오 페이지에서만 필요하다.
+따라서 따로 자바스크립트 파일을 만들어 따로 만들어 준다.
+
+지금의 웹팩은 엔트피 포인트가 하나이다.
+
+이것을 client 폴더에서 videoPlayer.js라는 새로운 파일을 만들어 작업한다.
+
+webpack.config.js에서
+module.exports = {
+  entry: {
+    main: "./src/client/js/main.js",
+    videoPlayer: "./src/client/js/videoPlayer.js",
+  },
+
+로 수정하고 
+filename: "js/[name].js",
+
+로 수정하고 실행하면 assets 폴더에도 main과 videoPlayer가 생성된다.
+
+우리는 watch페이지에서만 이 비디오 플레이어를 사용할 것이기 때문에
+view아래 watch.pug 폴더에서 추가해 준다.
+
+block scripts 
+    script(src="/static/js/videoPlayer.js")
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+play pause
+
+html 마크업을 해야한다.
+
+watch.pug에서
+
+div 
+        button#play Play 
+        button#mute Mute 
+        span#time 00:00/00:00
+        input(type="range",step="0.1" min="0" max="1")#volume
+
+로 플레이어를 간단히 만들고, 여기서 부여해준 id를 이용해 videoPlayer.js에서 작업한다.
+
+
+const video = document.querySelector("video");
+const play = document.getElementById("play");
+const mute = document.getElementById("mute");
+const time = document.getElementById("time");
+const volume = document.getElementById("volume");
+
+console.log(play, mute, time, volume);
+
+
+그리고 이제 자바스크립트 코딩을 한다.
+
+https://developer.mozilla.org/ko/docs/Web/API/HTMLMediaElement
+에서 플레이어에 관한 정보 얻기
+
+그 중 우린 paused를 이용할 것이다.
+비디오가 멈출때 paused가 true, false를 리턴하는 것을 이용.
+
+const handlePlayClick = e => {
+  // 비디오가 플레이 되고 있다면 멈추게 만든다
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
+  }
+  playBtn.innerText = video.paused ? "Play" : "Pause";
+};
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+mute 버튼 (음소거)
+
+muted 이용
+
+음소거를 누르고 다시 눌렀을때 전에 볼륨을 기억하고 그 상태로 만들어 져야 한다.
+볼륨을 움직일때 그걸 감지할 수 있어야 한다.
+html input range 문서 확인하기
+
+우선 volume의 기본 값을 세팅한다.(0.5로)
+
+1. 그리고 input 이벤트를 이용하여 실시간으로 값을 받아온다.
+2. 그 후 음소거가 된 상태에서 볼륨을 조정하면 바뀌도록 만들어 준다.
+3. 이제 음소거를 해제하면 그 전의 볼륨 상태로 돌아가는 작업을 한다.
+
+
+let volumeValue = 0.5;
+video.volume = 0.5;
+
+const handleMute = e => {
+  if (video.muted) {
+    video.muted = false;
+  } else {
+    video.muted = true;
+  }
+  muteBtn.innerText = video.muted ? "Unmute" : "Mute";
+  volumeRange.value = video.muted ? 0 : volumeValue;
+};
+
+const handleVolumeChange = event => {
+  const {
+    target: { value },
+  } = event;
+  if (video.muted) {
+    video.muted = false;
+    muteBtn.innerText = "Mute";
+  }
+  volumeValue = value;
+  video.volume = value;
+};
+
+로 가능하다.
+
+만약 원한다면 선호하는 볼륨을 local storage에 설정할 수도 있다.
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+time 조절하기
+
+오른쪽 시간엔 영상의 시간
+loaded meta data event 사용
+
+
+왼쪽은 재생되는 시간
+timeupdate 사용
+
+watch.pug 수정
+div 
+    span#currentTime 00:00
+    span  / 
+    span#totalTime 00:00
+
+
+const handleLadedMetadata = () => {
+  totalTime.innerText = Math.floor(video.duration);
+};
+
+const handleTimeUpdate = () => {
+  currentTime.innerText = Math.floor(video.currentTime);
+};
+
+로 작업 가능하다.
+
+
+
+이제 시간을 포맷해줘야 한다.
+Date Constructor
+자바스크립트 안에 있는 date()
+
+new Date(29*1000).toISOString().substr(11,8)
+으로 사용 가능하다.
+
+const formatTime = seconds =>
+  new Date(seconds * 1000).toISOString().substr(11, 8);
+
+로 간단하게 시간을 만들 수 있다.
+
+이제 우리의 비디오 시간을 업데이트해주는 기능을 만든다.
+
+이 다음으론
+설명을 적기란 쉽지 않다.. 영상을 보면서 따라가자..
+
+
+풀 스크린 만들기
+requestFullscreen()으로 가능
+
+fullScreen API
+https://developer.mozilla.org/ko/docs/Web/API/Fullscreen_API
+
+const handleFullscreen = () => {
+  const fullscreen = document.fullscreenElement;
+  if (fullscreen) {
+    document.exitFullscreen();
+    fullScreenBtn.innerText = "Enter Full Screen";
+  } else {
+    videoContainer.requestFullscreen();
+    fullScreenBtn.innerText = "Exit Full Screen";
+  }
+};
+
+로 작업 가능하다.
+
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+css
+
