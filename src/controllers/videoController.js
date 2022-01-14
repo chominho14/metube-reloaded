@@ -12,7 +12,7 @@ export const watch = async (req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id).populate("owner");
   if (!video) {
-    return res.status(404).render("404", { pageTitle: "Video not fountd." });
+    return res.render("404", { pageTitle: "Video not fountd." });
   }
   return res.render("watch", { pageTitle: video.title, video });
 };
@@ -111,4 +111,15 @@ export const search = async (req, res) => {
     console.log(videos);
   }
   return res.render("search", { pageTitle: "Search", videos });
+};
+
+export const registerView = async (req, res) => {
+  const { id } = req.params;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.status(404);
+  }
+  video.meta.views = video.meta.views + 1;
+  await video.save();
+  return res.status(200);
 };

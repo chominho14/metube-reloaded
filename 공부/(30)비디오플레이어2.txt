@@ -1,0 +1,68 @@
+
+1.
+마우스 커서를 비디오 위로 옮기면 컨트롤러를 보여주는 기능을 만든다.
+2.
+마우스가 움직임을 멈추면 몇 초 기다리다가 컨트롤러를 다시 사라지게 만든다.
+아니면 마우스커서가 비디오 안으로 들어가고 다시 나올때 컨트롤 막대가 몇 초 기다린 다음 사라지게 만든다.
+
+
+이것을 하기 위해서 
+첫번째, 마우스가 언제 비디오에 들어가고, 언제 비디오 안에서 움직이는 지 탐지한다.
+
+
+mousemove, mouseleave 이벤트를 사용한다.
+마우스를 올리거나 떠나면 작업이 가능하다.
+
+const handleMouseMove = () => {
+  videoControls.classList.add("showing");
+};
+
+const handleMouseLeave = () => {
+  setTimeout(()=>)
+  videoControls.classList.remove("showing");
+};
+
+이런 식으로 작업이 가능하다.
+classList.add("클래스명")
+으로 클래스를 추가할 수 있다.
+그리고 반대로 remove를 이용하면 지울 수 있다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
