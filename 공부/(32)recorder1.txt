@@ -53,6 +53,25 @@ npm i regenerator-runtime
 로 다운
 
 
+const startBtn = document.getElementById("startBtn");
+const preview = document.getElementById("preview");
+
+const handleStart = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+  });
+  video.srcObject = stream;
+  video.play();
+};
+
+startBtn.addEventListener("click", handleStart);
+
+
+로 사용한다.
+
+
+
 
 
 
