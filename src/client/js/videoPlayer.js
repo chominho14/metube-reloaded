@@ -14,14 +14,12 @@ const fullScreenIcon = fullScreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
 const videoControls = document.getElementById("videoControls");
 
-console.log(videoContainer.dataset);
-
 let controlsTimeout = null;
 let controlsMovementTimeout = null;
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
-const handlePlayClick = () => {
+const handlePlayClick = e => {
   // 비디오가 플레이 되고 있다면 멈추게 만든다
   if (video.paused) {
     video.play();
@@ -31,7 +29,7 @@ const handlePlayClick = () => {
   playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-pause";
 };
 
-const handleMuteClick = () => {
+const handleMuteClick = e => {
   if (video.muted) {
     video.muted = false;
   } else {
@@ -136,7 +134,7 @@ const handleEnded = () => {
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
-video.addEventListener("loadeddata", handleLoadedMetadata);
+video.addEventListener("loadedmetadata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullscreen);

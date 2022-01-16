@@ -1,0 +1,88 @@
+
+
+비디오 녹음기.
+javascript로 만들 것이다.
+
+webpack.config.js에 추가
+recorder: "./src/client/js/recorder.js",
+
+비디오를 5초동안 녹화할 수 있게 한다.
+녹화버튼을 누르면 5초동안 녹화를 하고, 5초가 지나면 녹화된 비디오를 다운 받을 수 있게 만든다.
+
+
+
+upload.pug에
+block scripts
+    script(src="/static/js/recorder.js")
+작업.
+
+
+누를 수 있는 버튼을 만들어서 사용자들이 비디오를 녹화 할 수 있게 만든다.
+버튼을 누르면 카메라 접근 권한을 얻고 녹화된 비디올ㄹ 미리 볼 수 ㅣㅇㅆ게 하고
+원한다면 저장할 수 있게 만든다.
+
+navigator 함수를 사용한다.
+navigator.mediaDevices.getUserMedia사용
+
+
+1. https://developer.mozilla.org/ko/docs/Web/API/MediaDevices/getUserMedia
+2.
+https://www.npmjs.com/package/regenerator-runtime
+
+
+하지만 이것을 사용하기 전에 카메라 사용여부, 마이크 사용 여부를 물어봐야 한다.
+promise를 사용한다. 아니면 await async를 사용한다.
+
+
+const handleStart = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+  });
+  console.log(stream);
+};
+
+로 작업한다.
+
+하지만 오류.
+-> async await을 사용하면 regeneratorRuntime을 다운하라고 한다.
+하지만 그렇게 안해도 된다. promise를 사용하면.
+하지만 async가 편하다.
+
+npm i regenerator-runtime
+로 다운
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

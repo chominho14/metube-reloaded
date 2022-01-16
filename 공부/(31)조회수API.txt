@@ -112,7 +112,19 @@ sendStatus()를 사용해 주어야 한다.
 -> 상태코드를 보내고 연결을 끝내는 역할을 한다.
 
 
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
+다른 풀이
+
+reduce()를 사용하면 더 짧게 줄일 수 있다.
+
+function solution(absolutes, signs) {
+    return absolutes.reduce((acc, val, i) => acc + (val * (signs[i] ? 1 : -1)), 0);
+}
+
+reduce 함수는 accumulator, currentValue, currentIndex, array 이렇게 네 인수를 받는다.
+
+signs[i]가 true면 1을 false면 -1을 value와 곱해 주고 그 값을 누적된 accumulator과 더해준다.
 
 
 
