@@ -1,0 +1,57 @@
+
+
+stop recording버튼을 눌렀을 때 녹화 중단이 이뤄지도록 코딩한다.
+
+let recorder ;
+
+const handleStart = () => {
+  startBtn.innerText = "Stop Recording";
+  startBtn.removeEventListener("click", handleStart);
+  startBtn.addEventListener("click", handleStop);
+
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = event => {
+    const videoFile = URL.createObjectURL(event.data);
+    video.srcObject = null;
+    video.src = videoFile;
+    video.loop = true;
+    video.play();
+  };
+  recorder.start();
+};
+로 수정
+
+이제 멈춤버튼을 누르면 다운로드 할 수 있게 만들어 줄 것이다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
