@@ -24,6 +24,37 @@ const handleStart = () => {
 이제 멈춤버튼을 누르면 다운로드 할 수 있게 만들어 줄 것이다.
 
 
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+비디오 다운로드
+마지 사용자가 클릭하는 것처럼 가짜 버튼을 만들어 준다.
+
+videoFile을 공유해야 한다.
+
+a
+https://developer.mozilla.org/ko/docs/Web/HTML/Element/a
+
+MediaRecorder
+https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder
+
+Mime type
+https://developer.mozilla.org/en-US/docs/Web/Media/Formats/codecs_parameter
+
+
+let videoFile;
+
+const handleDownload = () => {
+  const a = document.createElement("a");
+  a.href = videoFile;
+  a.download = "MyRecording.webm";
+  document.body.appendChild(a);
+  a.click();
+};
+
+로 다운로드를 구현할 수 있다.
+
+
 
 
 
