@@ -98,6 +98,22 @@ const thumbA = document.createElement("a");
 
 으로 썸네일 작업이 가능하다.
 
+  ffmpeg.FS("unlink", files.input);
+  ffmpeg.FS("unlink", files.output);
+  ffmpeg.FS("unlink", files.thumb);
+
+로 메모리에서 삭제가 가능하다.
+
+코드들을 가독성이 좋게 바꾼다.
+
+유저가 다운로드 버튼을 누르면 handleDownload함수에서 버튼의 내용을 바꾸게 한다.
+
+그리고 백엔드 작업..!
+-> Video.js 수정
+
+그 작업 중 라우터에서 video만 받는데 thumbnail파일도 받기 위해서 우리는 multer을 사용한다.
+
+
 
 
 
