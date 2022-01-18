@@ -1,0 +1,25 @@
+.watch__contents-container {
+  padding: 20px;
+  margin-top: 10px;
+  width: 95%;
+  background-color: #e1e2e1;
+  border-radius: 5px;
+  .watch__contents-description {
+    font-size: 2em;
+  }
+  .watch__contents-createdAt {
+    color: #919192;
+    margin-top: 5px;
+  }
+  .watch__contents-uploadedby {
+    color: #919192;
+    a {
+      font-size: 1.3em;
+      color: black;
+    }
+  }
+  .watch__contents-me {
+    margin-top: 20px;
+    font-size: 1.3em;
+  }
+}
