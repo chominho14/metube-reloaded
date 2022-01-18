@@ -65,7 +65,38 @@ app.use((req, res, next) => {
 
 
 
+썸네일 추가하기.
+첫 프레임이나 1초의 프레임을 사용한다.
 
+
+  await ffmpeg.run(
+    "-i",
+    "recording.webm",
+    "-ss",
+    "00:00:01",
+    "-frames:v",
+    "1",
+    "thumbnail.jpg"
+  );
+
+ffmpeg.FS("writeFile",~~~); 으로 인해 만들어진 recording.webm을 인풋으로 받고
+-ss , 00:00:01은 00:00:01의 시간대를 찾고
+1장의 스크린샷을 찍어서 그 파일을 thumbname.jpg로 저장하는 것이다.
+
+  const thumbFile = ffmpeg.FS("readFile", "thumbnail.jpg");
+
+  const thumbBlob = new Blob([thumbFile.buffer], { type: "image/jpg" });
+
+  const thumbURL = URL.createObjectURL(thumbBlob);
+
+
+const thumbA = document.createElement("a");
+  a.href = thumbURL;
+  a.download = "MyThumbnail.jpg";
+  document.body.appendChild(thumbA);
+  thumbA.click();
+
+으로 썸네일 작업이 가능하다.
 
 
 
