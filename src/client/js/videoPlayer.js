@@ -119,7 +119,7 @@ const handleMouseLeave = () => {
 };
 
 const handleSpaceBar = event => {
-  if (event.key === " ") {
+  if (event.target !== textarea && event.keyCode == 32) {
     handlePlayClick();
   }
 };
