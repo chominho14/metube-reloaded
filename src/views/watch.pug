@@ -43,4 +43,5 @@ block content
 
 block scripts 
     script(src="/static/js/videoPlayer.js")
-    script(src="/static/js/commentSction.js")
+    if loggedIn
+        script(src="/static/js/commentSction.js")

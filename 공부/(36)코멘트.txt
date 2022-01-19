@@ -61,6 +61,9 @@ commentSection.js를 만들어 작업한다.
 --> commentSection.js에서
 
 
+7. 백엔드에 request를 보낸다.
+
+
 
 
 
