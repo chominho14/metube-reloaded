@@ -94,7 +94,10 @@ const handleSubmit = event => {
 
 이렇게 작업한다.
 
-
+어떠한 작업을 만들 때 순서는
+1. json으로 정보를 보내고 frontend에 도착하면
+2. 그 response를 받아서 status를 검사하고
+3. await를 써서 json으로 메시지를 추출한다.
 
 
 
