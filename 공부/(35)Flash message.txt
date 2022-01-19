@@ -1,0 +1,129 @@
+
+flash message
+
+우리는 로그인하지 않은 사용자가 로그인 되었을때만 이용할 수 있는 페이지에 접근할때
+접근이 안 되도록 middleware설정을 했다.
+
+그리고 그 미들웨어는 redirect를 이용해 홈으로 가기 때문에 템플릿에 메시지를 남길 수 없다.
+
+그것을 넘어서 메시지까지 rendering해 줄 수 있게 만들어 주는 것이 flash message다.
+
+express-flash가 필요하다.
+
+
+Express Flash
+Express 애플리케이션용 플래시 메시지
+
+npm i express-flash
+
+https://www.npmjs.com/package/express-flash
+
+이 메시지는 session에 근거하기 때문에 한 사용자만이 볼 수 있다.
+-> server.js에서 사용한다.
+
+
+import flash from "express-flash";
+
+app.use(flash());
+로 사용한다.
+
+이것을 middleware.js에서 req.flash로 메시지를 설정해준다.
+
+이제 videoController.js에 작업해준다.
+
+    return res.status(403).redirect("/");
+
+이렇게 사용되는 부분 위에 
+    req.flash("error", "Not authorized");
+
+를 사용해준다.
+
+단계1. middleware에서 설정해주기
+단계2. 메시지를 남길 수 있도록 사용자를 redirect하는 곳에 req.flash 사용하기
+단계3. 
+
+이제 어떻게 메시지를 보내는 지 배우자.
+
+퍼그에서
+
+if messages.error 
+            span=messages.error
+
+로 사용가능
+
+flash는 locals를 만들어 준다.
+이러한 locals들은 퍼그에서 사용 가능하다.
+
+이러한 작업을 우린 message.pug를 만들어 사용할 것이다.
+
+mixin message(kind, text)
+    div.message(class=kind)
+        span=text
+
+그 후 css작업을 해준다.
+
+
+@keyframes goAway {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
+
+.message {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  max-width: 200px;
+  padding: 10px 20px;
+  border-radius: 10000px;
+  text-align: center;
+  animation: goAway 0.5s ease-in-out forwards;
+  animation-delay: 5s;
+  &.error {
+    background-color: #ccb9bc;
+    color: white;
+  }
+}
+
+--> 애니메이션을 이용하여 효과적으로 꾸며준다.
+	5초 있다가 위로 사라짐.(실제고 사라지는 것은 아니다)
+	opacity를 0으로 바꿔주어 사라지는 것처럼 보이게 만듬
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

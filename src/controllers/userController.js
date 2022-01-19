@@ -140,6 +140,7 @@ export const finishGithubLogin = async (req, res) => {
 
     req.session.loggedIn = true;
     req.session.user = user;
+    req.flash("info", "Bye Bye");
     return res.redirect("/");
   } else {
     return res.redirect("/login");
@@ -203,6 +204,7 @@ export const postEdit = async (req, res) => {
 
 export const getChangePassword = (req, res) => {
   if (req.session.user.socialOnly === true) {
+    req.flash("error", "Can`t change password.");
     return res.redirect("/");
   }
 
@@ -238,7 +240,7 @@ export const postChangePassword = async (req, res) => {
 
   await user.save();
   // send notification
-
+  req.flash("info", "Password updated");
   return res.redirect("/users/logout");
 };
 
@@ -248,6 +250,7 @@ export const see = async (req, res) => {
     path: "videos",
     populate: {
       path: "owner",
+      model: "User",
     },
   });
   if (!user) {
