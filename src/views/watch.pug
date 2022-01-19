@@ -38,17 +38,18 @@ block content
     if loggedIn
         div.video__add-comments
             form.video__comment-form#commentForm 
-                textarea(cols="30", rows="10", placeholder="Write a nice comment...")
-                button Add Comment
+                textarea(cols="30", rows="10", placeholder="새로운 댓글 추가...")
+                button
+                    i.far.fa-edit
     
     div.video__comments 
-        ul 
+        ul#video__comments-list 
             each comment in video.comments.reverse()
                 li.video__comment(data-id=comment.id)
                     i.fas.fa-comment
                     span #{comment.text}
-                    if String(video.owner._id) === String(loggedInUser._id)
-                        span ❌
+                    if String(comment.owner._id) === String(loggedInUser._id) || String(video.owner._id) === String(loggedInUser._id)
+                        button#video__comment-delete ❌
 
 block scripts 
     script(src="/static/js/videoPlayer.js")

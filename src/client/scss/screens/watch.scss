@@ -24,19 +24,60 @@
   }
 }
 
+.video__add-comments {
+  width: 100%;
+
+  margin-top: 20px;
+
+  .video__comment-form {
+    textarea {
+      margin-left: 15%;
+      width: 60%;
+      height: 40px;
+      font-size: 20px;
+      border-radius: 5px;
+      background-color: #f5f5f6;
+      border-color: #a0a0a1;
+      color: #7f827c;
+      margin-right: 5px;
+    }
+    button {
+      border-radius: 5px;
+      i {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
 .video__comments {
   display: flex;
   flex-direction: column;
-  max-width: 320px;
+  max-width: 400px;
   width: 100%;
   margin: 0 auto;
   margin-top: 20px;
-  .video__comment {
-    padding: 10px;
-    border-radius: 10px;
 
+  .video__comment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    word-wrap: break-word;
+    padding: 10px;
+    border-radius: 5px;
     background-color: white;
     color: black;
     margin-bottom: 10px;
+    span {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    button {
+      border: none;
+      cursor: pointer;
+      background-color: white;
+    }
   }
 }
