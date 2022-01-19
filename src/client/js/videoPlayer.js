@@ -118,12 +118,6 @@ const handleMouseLeave = () => {
   controlsTimeout = setTimeout(hideControls, 3000);
 };
 
-const handleSpaceBar = event => {
-  if (event.target !== textarea && event.keyCode == 32) {
-    handlePlayClick();
-  }
-};
-
 const handleEnded = () => {
   const { id } = videoContainer.dataset;
   fetch(`/api/videos/${id}/view`, {
@@ -141,5 +135,4 @@ fullScreenBtn.addEventListener("click", handleFullscreen);
 videoContainer.addEventListener("mousemove", handleMouseMove);
 videoContainer.addEventListener("mouseleave", handleMouseLeave);
 video.addEventListener("click", handlePlayClick);
-document.addEventListener("keydown", handleSpaceBar);
 video.addEventListener("ended", handleEnded);
