@@ -1,0 +1,77 @@
+
+
+Comments
+
+지금까지 했던 것들을 모두 활용해서 만든다.
+
+comment models
+
+Schemas 정의
+
+https://mongoosejs.com/docs/guide.html
+
+1.
+스키마 만들기 - 모델에 Comment.js를 만들어 작업한다.
+
+import mongoose from "mongoose";
+
+const commentSchema = new mongoose.Schema({
+  text: { type: String.toString, required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+  video: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Video" },
+  createdAt: { type: Date, required: true, default: Date.now },
+});
+
+const Comment = mongoose.model("Comment", commentSchema);
+
+export default Comment;
+
+
+2.
+User.js와 Video.js에 
+  comments: [{ types: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+
+comments: [
+    { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Comment" },
+  ],
+
+를 추가해 주기.
+
+
+3.
+init.js에 import하기
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
