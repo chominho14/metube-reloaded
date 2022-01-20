@@ -113,6 +113,30 @@ heroku는 오직 git history만 본다.
 
 .gitignore에 있는 것들은 업로드 되지 않는다.
 
+파워쉘에서 내 프로젝트 위치로 이동해준다.
+거기서 herocu push origin main 
+
+하지만 이렇게 해도 mongoUrl로 오류.
+-> .gitignore에 있어서이다.
+
+mongoDB Atlas 계정만들기
+
+MongoDB Atlas
+https://www.mongodb.com/atlas/database
+
+MongoDB 생성
+1. 새로운 Project 생성
+2. Cluster추가
+(Atlas-DEPLOYMENT-Databases에서 Build a Database로 변경)
+3. Shared클릭
+4. Cloud Provider & Region 선택 (us-east-1)
+5. Cluster Tier 선택 (Free)
+6. Cluster 생성
+
+.env에서 설정한 환경 변수를 heroku에 Config Vars에 추가
+
+
+
 
 
 
