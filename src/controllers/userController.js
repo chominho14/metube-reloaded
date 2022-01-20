@@ -164,7 +164,6 @@ export const postEdit = async (req, res) => {
     body: { name, email, username, location },
     file,
   } = req;
-  console.log(file);
   // 예외처리(다른유저의 email과 username을 입력하면 에러)
   let searchParam = [];
 

@@ -1,0 +1,121 @@
+
+
+Building the Backend
+
+Heroku를 통해 배포한다.
+-> 어떤 node.js환경에서도 서버가 실행될 수 있게 설정을 바꿔야 한다.
+
+DB설정을 바꾼다.
+현재 MongoDB는 local에서만 실행되고 있다. 이것을 우리 서버가 아닌 아마존에
+올려야 한다.
+
+우리의 코드를 production방법으로 빌드해야 되고, 코드를 압축(minify)해야한다.
+
+
+실제 서버에서 백엔드를 실행하는 단계를 해보자.
+
+1.
+우리가 만든 코드를 실행하려면 바벨을 사용한다.
+하지만 바벨을 사용하면 performance에 문제가 생긴다.
+
+바벨은 빠르지 않다.
+그래서 init.js를 일반적인 javascript로 바꿔야 한다.
+babel CLI 사용.
+
+https://babeljs.io/docs/en/babel-cli
+npm install --save-dev @babel/core @babel/cli
+
+그 다음 script를 만들자.
+pakage.json에서!
+
+"build:server": "babel src/init.js -d build",
+
+-d : directory : 빌드한 코드를 어디에 저장할 지
+그리고 npm run build:server로 실행
+
+우리가 원하는 건 src폴더를 빌드하는 것이다. 따라서 수정.
+
+"build:server": "babel src -d build",
+
+문제는 코드를 빌드할때 client 부분도 빌드된다.
+client는 빌드하면 안되고 웹팩은 하나만 해야한다.
+
+스크립트에
+    "start": "node build/init.js",
+
+추가
+-> nodemon은 babel-node src/init.js를 실행한다.
+우리는 node build/init.js를 실행하고 싶다.
+
+하지만 오류!
+-> 코드가 async와 await을 사용할 수 있게 알려줘야 한다.
+
+regeneratorRuntime에러
+-> init.js에 import "regenerator-runtime";
+추가해준다.
+
+https://www.npmjs.com/package/regenerator-runtime
+
+
+이렇게 설정해주면 babel로 실행되는 것이 아닌 node로 실행되게 된다.
+-> babel의 도움없이 javascript를 실행한다는 말.
+
+이제 local~4000으로 잘 되는지 확인한다.
+views폴더에 build에 없다. 하지만 실행된다.
+-> server.js때문에.
+app.set("views",process.cwd() + ~)때문에.
+
+이제 클라이언트 코드를 빌드할 것이다.
+production을 만들 것이다. - 압축
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+Building the Frontend
+
+웹팩에는 두 가지가 있다.
+1. development
+2. production - 코드가 더 작다.
+
+-> assets를 빌드하고 싶다.
+"build": "npm run build:server && npm run build:assets",
+
+"build:assets": "webpack --mode=production",
+"dev:assets": "webpack --mode=development -w"
+
+수정
+webpack.config.js
+13,14번째 줄 삭제
+mode: "development",
+watch: true,
+
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+
+Heroku
+서버를 Heroku에 올릴 것이다.
+서버의 배포를 도와준다.
+
+https://www.heroku.com/
+
+Heroku에 백엔드 서버를 업로드하는 방법에는 두 가지가 있다.
+
+1. Github
+
+2. Heroku Git
+
+heroku git:remote -a metube-reloaded
+
+heroku는 오직 git history만 본다.
+
+.gitignore에 있는 것들은 업로드 되지 않는다.
+
+
+
+
+
+
+
