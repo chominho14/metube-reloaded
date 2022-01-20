@@ -141,5 +141,18 @@ https://metube-reloaded.herokuapp.com/users/github/finish
 test
 http://localhost:4000/users/github/finish
 
+우리는 파일을 저장하기 위해서 aws를 사용할 것이다.
+S3, IAM, 여기서 aws_id, aws_secret 을 .env, heroku에 넣기
 
 
+이제 Multer S3 를 사용한다.
+
+Multer S3 설치
+AWS S3용 스트리밍 Multer 스토리지 엔진
+npm i multer-s3
+https://www.npmjs.com/package/multer-s3
+
+AWS-SDK 설치
+JavaScript용 AWS SDK
+npm i aws-sdk
+https://www.npmjs.com/package/aws-sdk
