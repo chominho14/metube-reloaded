@@ -135,11 +135,11 @@ MongoDB 생성
 
 .env에서 설정한 환경 변수를 heroku에 Config Vars에 추가
 
+실제
+https://metube-reloaded.herokuapp.com/users/github/finish
 
-
-
-
-
+test
+http://localhost:4000/users/github/finish
 
 
 
