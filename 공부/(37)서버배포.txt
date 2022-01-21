@@ -201,3 +201,26 @@ AWS_REGION 에 key와 value를 추가해준다.
     ]
 }
 로 추가.
+
+3. ACL(액세스 제어 목록)을 모든사람(퍼블릭 액세스) 나열, 읽기 허용
+
+4. CORS(Cross-origin 리소스 공유 )
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "HEAD"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": [],
+        "MaxAgeSeconds": 3000
+    }
+]
+
+5.img와 video 뒤에 crossorigin 붙여준다.
+
