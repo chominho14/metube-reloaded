@@ -10,9 +10,19 @@ const s3 = new aws.S3({
   },
 });
 
-const multerUploader = multerS3({
+const s3ImageUploader = multerS3({
   s3,
-  bucket: "metubee",
+  bucket: "metubee/images",
+  Condition: {
+    StringEquals: {
+      "s3:x-amz-acl": ["public-read"],
+    },
+  },
+});
+
+const s3VideoUploader = multerS3({
+  s3,
+  bucket: "metubee/videos",
   Condition: {
     StringEquals: {
       "s3:x-amz-acl": ["public-read"],
@@ -52,7 +62,7 @@ export const avatarUpload = multer({
   limits: {
     fileSize: 3000000,
   },
-  storage: multerUploader,
+  storage: s3ImageUploader,
 });
 
 export const videoUpload = multer({
@@ -60,5 +70,5 @@ export const videoUpload = multer({
   limits: {
     fileSize: 10000000,
   },
-  storage: multerUploader,
+  storage: s3VideoUploader,
 });
