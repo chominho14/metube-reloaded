@@ -156,3 +156,48 @@ AWS-SDK 설치
 JavaScript용 AWS SDK
 npm i aws-sdk
 https://www.npmjs.com/package/aws-sdk
+
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+몇일 동안 해결하지 못했던 문제.
+
+aws에 올라간 데이터를 heroku에서 받아오는데 제대로 받아오지 못해 계속 사진과 영상이 깨졌다.
+
+이것을 해결한 방법.
+구글링과 유튜브.
+
+우선 aws에서 가져온 url이 region을 포함하지 않은 url이라는 것을 인지하였다.
+
+이것을 해결하기 위해 
+
+const s3 = new aws.S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ID,
+    secretAccessKey: process.env.AWS_SECRET,
+    region: process.env.AWS_REGION,
+  },
+});
+
+로 region을 추가하고 heroku - settings - config vars에서 
+AWS_REGION 에 key와 value를 추가해준다.
+
+이 과정으로 aws에 파일이 저장될 때 알맞은 url로 저장되었다.( 이 과정이 해결시간의 50% 차지 )
+
+그리고 나서는 권한 문제가 발생.
+
+1. 퍼블릭 액세스 차단에 모든 퍼블릭을 허용해 줬다.
+2. 그 후 버킷 정책을 수정했다.
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadForGetBucketObjects",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::metubee/*"
+        }
+    ]
+}
+로 추가.
