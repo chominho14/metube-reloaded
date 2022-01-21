@@ -1,5 +1,11 @@
 # Metube Project
 
+## 배포사이트
+
+> Visit https://metube-reloaded.herokuapp.com/
+
+---
+
 ## 프로젝트 계획 이유
 
 > 하나의 프로젝트가 처음 라우터 구성부터 Database설계, javascript를 이용한 프론트엔드와 백엔드의 구성까지 진행되어 가는 과정에 대해서 경험해보고 싶었습니다.
