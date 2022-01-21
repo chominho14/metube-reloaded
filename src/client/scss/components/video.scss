@@ -7,6 +7,11 @@
     background-color: #e1e2e1;
     background-position: center;
     background-size: cover;
+    img {
+      height: 140px;
+      border-radius: 7px;
+      width: 100%;
+    }
   }
   .video-mixin__data {
     padding: 0px 15px;
