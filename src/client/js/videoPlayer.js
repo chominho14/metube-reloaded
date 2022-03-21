@@ -66,9 +66,13 @@ const handleVolumeChange = event => {
     Number(value) === 0 ? "fas fa-volume-mute" : "fas fa-volume-up";
 };
 
-const formatTime = seconds =>
-  new Date(seconds * 1000).toISOString().substr(14, 5);
-
+const formatTime = seconds => {
+  if (seconds >= 3600) {
+    return new Date(seconds * 1000).toISOString().substring(11, 19);
+  } else {
+    return new Date(seconds * 1000).toISOString().substring(14, 19);
+  }
+};
 const handleLoadedMetadata = () => {
   totalTime.innerText = formatTime(Math.floor(video.duration));
   timeline.max = Math.floor(video.duration);
@@ -85,6 +89,11 @@ const handleTimelineChange = event => {
   } = event;
   video.currentTime = value;
 };
+
+if (!isNaN(video.duration)) {
+  video.addEventListener("canplay", handleLoadedMetaData);
+  handleLoadedMetaData();
+}
 
 const handleFullscreen = () => {
   const fullscreen = document.fullscreenElement;
