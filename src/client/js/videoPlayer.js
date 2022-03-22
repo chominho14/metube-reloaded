@@ -86,11 +86,6 @@ const handleTimelineChange = event => {
   video.currentTime = value;
 };
 
-if (!isNaN(video.duration)) {
-  video.addEventListener("canplay", handleLoadedMetaData);
-  handleLoadedMetaData();
-}
-
 const handleFullscreen = () => {
   const fullscreen = document.fullscreenElement;
   if (fullscreen) {
