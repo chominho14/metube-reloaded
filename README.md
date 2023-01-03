@@ -4,8 +4,6 @@
 
 ### 버전 v0.0.1
 
-> URL : https://metube-reloaded.herokuapp.com/
-
 ---
 
 ### ✅ 프로젝트 목표
